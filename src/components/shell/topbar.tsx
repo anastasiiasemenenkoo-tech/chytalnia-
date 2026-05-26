@@ -1,6 +1,8 @@
 import { LogOut } from "lucide-react";
 
 import { logoutAction } from "@/actions/auth";
+import { MobileNav } from "@/components/shell/mobile-nav";
+import { ThemeToggle } from "@/components/shell/theme-toggle";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
@@ -18,11 +20,15 @@ export function Topbar({
   user: { email: string; name: string | null };
 }) {
   return (
-    <header className="bg-background flex h-14 items-center justify-between border-b px-4 md:px-6">
-      <div className="text-muted-foreground text-sm">
-        Welcome back{user.name ? `, ${user.name}` : ""}
+    <header className="bg-background flex h-14 items-center justify-between gap-3 border-b px-4 md:px-6">
+      <div className="flex items-center gap-2">
+        <MobileNav />
+        <div className="text-muted-foreground text-sm">
+          Welcome back{user.name ? `, ${user.name}` : ""}
+        </div>
       </div>
       <div className="flex items-center gap-3">
+        <ThemeToggle />
         <Avatar className="h-8 w-8">
           <AvatarFallback className="text-xs">
             {initials(user.name, user.email)}
