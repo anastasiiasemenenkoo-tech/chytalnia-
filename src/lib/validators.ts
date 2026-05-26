@@ -1,0 +1,57 @@
+import { z } from "zod";
+
+export const SignupSchema = z.object({
+  email: z.email("Please enter a valid email.").trim().toLowerCase(),
+  name: z.string().trim().min(1, "Please enter your name.").max(80),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters.")
+    .max(200),
+});
+export type SignupInput = z.infer<typeof SignupSchema>;
+
+export const LoginSchema = z.object({
+  email: z.email("Please enter a valid email.").trim().toLowerCase(),
+  password: z.string().min(1, "Please enter your password."),
+});
+export type LoginInput = z.infer<typeof LoginSchema>;
+
+export const ShelfEnum = z.enum(["WANT_TO_READ", "READING", "READ"]);
+export type ShelfValue = z.infer<typeof ShelfEnum>;
+
+export const AddBookSchema = z.object({
+  olid: z.string().trim().min(1).max(120),
+  title: z.string().trim().min(1).max(300),
+  author: z.string().trim().min(1).max(300),
+  coverUrl: z.string().trim().url().optional().or(z.literal("")),
+  shelf: ShelfEnum,
+});
+
+export const ManualAddBookSchema = z.object({
+  title: z.string().trim().min(1, "Title is required.").max(300),
+  author: z.string().trim().min(1, "Author is required.").max(300),
+  shelf: ShelfEnum,
+});
+
+export const MoveBookSchema = z.object({
+  userBookId: z.string().trim().min(1),
+  shelf: ShelfEnum,
+});
+
+export const RemoveBookSchema = z.object({
+  userBookId: z.string().trim().min(1),
+});
+
+export const CreateClubSchema = z.object({
+  name: z.string().trim().min(2, "Name must be at least 2 characters.").max(80),
+  description: z.string().trim().max(500).optional().or(z.literal("")),
+});
+
+export const ClubIdSchema = z.object({
+  clubId: z.string().trim().min(1),
+});
+
+export const SetClubBookSchema = z.object({
+  clubId: z.string().trim().min(1),
+  bookId: z.string().trim().min(1),
+});
