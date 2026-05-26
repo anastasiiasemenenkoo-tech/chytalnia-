@@ -132,6 +132,8 @@ export default async function DashboardPage() {
                 coverUrl={ub.book.coverUrl}
                 shelf={ub.shelf as ShelfValue}
                 finishedAt={ub.finishedAt}
+                pagesRead={ub.pagesRead}
+                totalPages={ub.totalPages}
               />
             ))}
           </div>

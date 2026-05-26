@@ -55,3 +55,14 @@ export const SetClubBookSchema = z.object({
   clubId: z.string().trim().min(1),
   bookId: z.string().trim().min(1),
 });
+
+export const UpdateProgressSchema = z
+  .object({
+    userBookId: z.string().trim().min(1),
+    pagesRead: z.coerce.number().int().min(0).max(100000),
+    totalPages: z.coerce.number().int().min(1).max(100000),
+  })
+  .refine((d) => d.pagesRead <= d.totalPages, {
+    error: "Pages read can't exceed total pages.",
+    path: ["pagesRead"],
+  });

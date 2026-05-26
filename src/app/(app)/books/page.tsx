@@ -110,6 +110,8 @@ export default async function BooksPage({
               coverUrl={ub.book.coverUrl}
               shelf={ub.shelf as ShelfValue}
               finishedAt={ub.finishedAt}
+              pagesRead={ub.pagesRead}
+              totalPages={ub.totalPages}
             />
           ))}
         </div>

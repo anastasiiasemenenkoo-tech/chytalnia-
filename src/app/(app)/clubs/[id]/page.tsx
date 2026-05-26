@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Users } from "lucide-react";
 
 import { BookCover } from "@/components/books/book-cover";
+import { ReadingProgressBar } from "@/components/books/reading-progress-bar";
+import { ReadingProgressDialog } from "@/components/books/reading-progress-dialog";
 import { JoinLeaveButton } from "@/components/clubs/join-leave-button";
 import { SetCurrentBook } from "@/components/clubs/set-current-book";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -51,6 +53,18 @@ export default async function ClubDetailPage({
   const myMembership = club.memberships.find((m) => m.userId === user.id);
   const isOwner = club.ownerId === user.id;
   const isMember = !!myMembership;
+
+  const myUserBookForClub = club.currentlyReadingBookId
+    ? await prisma.userBook.findUnique({
+        where: {
+          userId_bookId: {
+            userId: user.id,
+            bookId: club.currentlyReadingBookId,
+          },
+        },
+        select: { id: true, pagesRead: true, totalPages: true },
+      })
+    : null;
 
   const myBooks = isOwner
     ? await prisma.userBook.findMany({
@@ -120,21 +134,42 @@ export default async function ClubDetailPage({
           </CardHeader>
           <CardContent className="space-y-4">
             {club.currentlyReadingBook ? (
-              <div className="flex gap-4">
-                <div className="w-20 shrink-0">
-                  <BookCover
-                    src={club.currentlyReadingBook.coverUrl}
-                    alt={club.currentlyReadingBook.title}
+              <div className="space-y-3">
+                <div className="flex gap-4">
+                  <div className="w-20 shrink-0">
+                    <BookCover
+                      src={club.currentlyReadingBook.coverUrl}
+                      alt={club.currentlyReadingBook.title}
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-sm font-medium">
+                      {club.currentlyReadingBook.title}
+                    </h3>
+                    <p className="text-muted-foreground text-xs">
+                      {club.currentlyReadingBook.author}
+                    </p>
+                    {myUserBookForClub && (
+                      <ReadingProgressBar
+                        className="mt-3"
+                        pagesRead={myUserBookForClub.pagesRead}
+                        totalPages={myUserBookForClub.totalPages}
+                      />
+                    )}
+                  </div>
+                </div>
+                {myUserBookForClub ? (
+                  <ReadingProgressDialog
+                    userBookId={myUserBookForClub.id}
+                    title={club.currentlyReadingBook.title}
+                    pagesRead={myUserBookForClub.pagesRead}
+                    totalPages={myUserBookForClub.totalPages}
                   />
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium">
-                    {club.currentlyReadingBook.title}
-                  </h3>
+                ) : (
                   <p className="text-muted-foreground text-xs">
-                    {club.currentlyReadingBook.author}
+                    Add this book to your shelves to track your progress.
                   </p>
-                </div>
+                )}
               </div>
             ) : (
               <p className="text-muted-foreground text-sm">

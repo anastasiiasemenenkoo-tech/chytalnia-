@@ -10,6 +10,7 @@ import {
   ManualAddBookSchema,
   MoveBookSchema,
   RemoveBookSchema,
+  UpdateProgressSchema,
   type ShelfValue,
 } from "@/lib/validators";
 
@@ -137,5 +138,54 @@ export async function removeBookFromShelf(
 
   revalidatePath("/books");
   revalidatePath("/dashboard");
+  return { ok: true };
+}
+
+export async function updateReadingProgress(
+  formData: FormData,
+): Promise<ActionResult> {
+  const user = await requireCurrentUser();
+  const parsed = UpdateProgressSchema.safeParse({
+    userBookId: formData.get("userBookId"),
+    pagesRead: formData.get("pagesRead"),
+    totalPages: formData.get("totalPages"),
+  });
+  if (!parsed.success) {
+    const issues = parsed.error.flatten();
+    const first =
+      issues.fieldErrors.pagesRead?.[0] ??
+      issues.fieldErrors.totalPages?.[0] ??
+      issues.formErrors[0] ??
+      "Invalid progress values.";
+    return { ok: false, error: first };
+  }
+
+  const existing = await prisma.userBook.findUnique({
+    where: { id: parsed.data.userBookId },
+    select: { userId: true, shelf: true },
+  });
+  if (!existing || existing.userId !== user.id) {
+    return { ok: false, error: "Book not found." };
+  }
+
+  const finished = parsed.data.pagesRead >= parsed.data.totalPages;
+
+  await prisma.userBook.update({
+    where: { id: parsed.data.userBookId },
+    data: {
+      pagesRead: parsed.data.pagesRead,
+      totalPages: parsed.data.totalPages,
+      progressUpdated: new Date(),
+      // Auto-promote to READ when finished; never auto-demote.
+      ...(finished && existing.shelf !== "READ"
+        ? { shelf: "READ", finishedAt: new Date() }
+        : {}),
+    },
+  });
+
+  revalidatePath("/books");
+  revalidatePath("/dashboard");
+  // Club page may surface this user's progress for the currently-reading book.
+  revalidatePath("/clubs", "layout");
   return { ok: true };
 }

@@ -44,12 +44,15 @@ model Book {
 }
 
 model UserBook {
-  id         String    @id @default(cuid())
-  userId     String
-  bookId     String
-  shelf      Shelf
-  addedAt    DateTime  @default(now())
-  finishedAt DateTime?
+  id              String    @id @default(cuid())
+  userId          String
+  bookId          String
+  shelf           Shelf
+  addedAt         DateTime  @default(now())
+  finishedAt      DateTime?
+  pagesRead       Int?
+  totalPages      Int?
+  progressUpdated DateTime?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)

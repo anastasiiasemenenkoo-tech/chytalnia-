@@ -1,4 +1,6 @@
 import { BookCover } from "@/components/books/book-cover";
+import { ReadingProgressBar } from "@/components/books/reading-progress-bar";
+import { ReadingProgressDialog } from "@/components/books/reading-progress-dialog";
 import { ShelfControls } from "@/components/books/shelf-controls";
 import { Badge } from "@/components/ui/badge";
 import { SHELF_LABELS } from "@/lib/shelf-labels";
@@ -11,6 +13,8 @@ export function BookCard({
   coverUrl,
   shelf,
   finishedAt,
+  pagesRead,
+  totalPages,
 }: {
   userBookId: string;
   title: string;
@@ -18,6 +22,8 @@ export function BookCard({
   coverUrl: string | null;
   shelf: ShelfValue;
   finishedAt: Date | null;
+  pagesRead: number | null;
+  totalPages: number | null;
 }) {
   return (
     <article className="bg-card text-card-foreground flex gap-4 rounded-lg border p-4">
@@ -42,8 +48,24 @@ export function BookCard({
             </Badge>
           )}
         </div>
-        <div className="mt-auto pt-3">
+        {shelf === "READING" && (
+          <div className="mt-3">
+            <ReadingProgressBar
+              pagesRead={pagesRead}
+              totalPages={totalPages}
+            />
+          </div>
+        )}
+        <div className="mt-auto flex flex-wrap items-center gap-2 pt-3">
           <ShelfControls userBookId={userBookId} shelf={shelf} />
+          {shelf === "READING" && (
+            <ReadingProgressDialog
+              userBookId={userBookId}
+              title={title}
+              pagesRead={pagesRead}
+              totalPages={totalPages}
+            />
+          )}
         </div>
       </div>
     </article>
