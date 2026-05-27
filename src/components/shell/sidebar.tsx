@@ -57,9 +57,14 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
 export function SidebarBrand() {
   const dict = useDict();
   return (
-    <div className="flex h-14 items-center gap-2 border-b px-5 text-base font-semibold">
+    <div className="flex h-14 items-center gap-2 border-b px-5">
       <BookOpen className="h-5 w-5" />
-      {dict.brand}
+      <div className="flex flex-col leading-tight">
+        <span className="text-base font-semibold">{dict.brand}</span>
+        <span className="text-sidebar-foreground/60 text-[10px] italic">
+          {dict.tagline}
+        </span>
+      </div>
     </div>
   );
 }

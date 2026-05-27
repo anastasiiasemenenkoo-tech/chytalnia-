@@ -31,9 +31,15 @@ export default async function Home() {
   return (
     <div className="bg-background flex min-h-screen flex-col">
       <header className="flex items-center justify-between border-b px-6 py-4">
-        <Link href="/" className="flex items-center gap-2 text-lg font-semibold">
-          <BookOpen className="h-5 w-5" />
+        <Link
+          href="/"
+          className="flex items-baseline gap-2 text-lg font-semibold"
+        >
+          <BookOpen className="h-5 w-5 self-center" />
           {dict.brand}
+          <span className="text-muted-foreground hidden text-xs font-normal italic sm:inline">
+            · {dict.tagline}
+          </span>
         </Link>
         <div className="flex items-center gap-2">
           <Link href="/login" className={buttonVariants({ variant: "ghost" })}>

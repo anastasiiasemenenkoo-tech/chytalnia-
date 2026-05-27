@@ -2,6 +2,7 @@ import type { Dictionary } from "@/i18n/dictionaries/uk";
 
 export const en: Dictionary = {
   brand: "Читальня",
+  tagline: "your reading space",
   common: {
     save: "Save",
     saving: "Saving…",
