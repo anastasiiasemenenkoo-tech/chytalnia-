@@ -5,6 +5,7 @@ import { ArrowLeft, Users } from "lucide-react";
 import { BookCover } from "@/components/books/book-cover";
 import { ReadingProgressBar } from "@/components/books/reading-progress-bar";
 import { ReadingProgressDialog } from "@/components/books/reading-progress-dialog";
+import { ClubReviews } from "@/components/clubs/club-reviews";
 import { JoinLeaveButton } from "@/components/clubs/join-leave-button";
 import { SetCurrentBook } from "@/components/clubs/set-current-book";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -221,6 +222,14 @@ export default async function ClubDetailPage({
           </CardContent>
         </Card>
       </section>
+
+      {club.currentlyReadingBook && (
+        <ClubReviews
+          bookId={club.currentlyReadingBook.id}
+          bookTitle={club.currentlyReadingBook.title}
+          memberIds={club.memberships.map((m) => m.userId)}
+        />
+      )}
     </div>
   );
 }

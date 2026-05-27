@@ -2,7 +2,8 @@ import Link from "next/link";
 import { ArrowRight, Library, Search, Users } from "lucide-react";
 
 import { BookCard } from "@/components/books/book-card";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { YearlyGoalCard } from "@/components/dashboard/yearly-goal-card";
+import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -18,20 +19,35 @@ import type { ShelfValue } from "@/lib/validators";
 export default async function DashboardPage() {
   const user = await requireCurrentUser();
 
-  const [grouped, currentlyReading, clubCount] = await Promise.all([
-    prisma.userBook.groupBy({
-      by: ["shelf"],
-      where: { userId: user.id },
-      _count: { shelf: true },
-    }),
-    prisma.userBook.findMany({
-      where: { userId: user.id, shelf: "READING" },
-      include: { book: true },
-      orderBy: { addedAt: "desc" },
-      take: 6,
-    }),
-    prisma.clubMembership.count({ where: { userId: user.id } }),
-  ]);
+  const year = new Date().getFullYear();
+  const yearStart = new Date(year, 0, 1);
+
+  const [grouped, currentlyReading, clubCount, readThisYear, userRecord] =
+    await Promise.all([
+      prisma.userBook.groupBy({
+        by: ["shelf"],
+        where: { userId: user.id },
+        _count: { shelf: true },
+      }),
+      prisma.userBook.findMany({
+        where: { userId: user.id, shelf: "READING" },
+        include: { book: true },
+        orderBy: { addedAt: "desc" },
+        take: 6,
+      }),
+      prisma.clubMembership.count({ where: { userId: user.id } }),
+      prisma.userBook.count({
+        where: {
+          userId: user.id,
+          shelf: "READ",
+          finishedAt: { gte: yearStart },
+        },
+      }),
+      prisma.user.findUnique({
+        where: { id: user.id },
+        select: { yearlyGoal: true },
+      }),
+    ]);
 
   const counts = Object.fromEntries(
     grouped.map((g) => [g.shelf, g._count.shelf]),
@@ -78,6 +94,12 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      <YearlyGoalCard
+        goal={userRecord?.yearlyGoal ?? null}
+        readThisYear={readThisYear}
+        year={year}
+      />
 
       <section>
         <div className="mb-4 flex items-center justify-between">
@@ -134,6 +156,9 @@ export default async function DashboardPage() {
                 finishedAt={ub.finishedAt}
                 pagesRead={ub.pagesRead}
                 totalPages={ub.totalPages}
+                rating={ub.rating}
+                review={ub.review}
+                notes={ub.notes}
               />
             ))}
           </div>

@@ -112,6 +112,9 @@ export default async function BooksPage({
               finishedAt={ub.finishedAt}
               pagesRead={ub.pagesRead}
               totalPages={ub.totalPages}
+              rating={ub.rating}
+              review={ub.review}
+              notes={ub.notes}
             />
           ))}
         </div>

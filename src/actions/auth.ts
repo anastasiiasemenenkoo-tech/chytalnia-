@@ -1,11 +1,18 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { AuthError } from "next-auth";
 import bcrypt from "bcryptjs";
 
 import { signIn, signOut } from "@/auth";
 import { prisma } from "@/lib/db";
-import { LoginSchema, SignupSchema } from "@/lib/validators";
+import { requireCurrentUser } from "@/lib/session";
+import {
+  LoginSchema,
+  SignupSchema,
+  YearlyGoalSchema,
+} from "@/lib/validators";
+import type { ActionResult } from "@/actions/books";
 
 export type AuthFormState =
   | {
@@ -87,4 +94,22 @@ export async function loginAction(
 
 export async function logoutAction() {
   await signOut({ redirectTo: "/login" });
+}
+
+export async function setYearlyGoal(formData: FormData): Promise<ActionResult> {
+  const user = await requireCurrentUser();
+  const parsed = YearlyGoalSchema.safeParse({
+    target: formData.get("target"),
+  });
+  if (!parsed.success) {
+    return { ok: false, error: "Goal must be between 0 and 1000." };
+  }
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { yearlyGoal: parsed.data.target > 0 ? parsed.data.target : null },
+  });
+
+  revalidatePath("/dashboard");
+  return { ok: true };
 }

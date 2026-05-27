@@ -66,3 +66,27 @@ export const UpdateProgressSchema = z
     error: "Pages read can't exceed total pages.",
     path: ["pagesRead"],
   });
+
+export const RatingSchema = z.object({
+  userBookId: z.string().trim().min(1),
+  rating: z.coerce.number().int().min(1).max(5),
+});
+
+export const ClearRatingSchema = z.object({
+  userBookId: z.string().trim().min(1),
+});
+
+export const ReviewSchema = z.object({
+  userBookId: z.string().trim().min(1),
+  rating: z.coerce.number().int().min(1).max(5),
+  review: z.string().trim().max(2000).optional().or(z.literal("")),
+});
+
+export const NotesSchema = z.object({
+  userBookId: z.string().trim().min(1),
+  notes: z.string().trim().max(4000).optional().or(z.literal("")),
+});
+
+export const YearlyGoalSchema = z.object({
+  target: z.coerce.number().int().min(0).max(1000),
+});

@@ -23,6 +23,7 @@ model User {
   email          String   @unique
   name           String?
   hashedPassword String
+  yearlyGoal     Int?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -53,6 +54,12 @@ model UserBook {
   pagesRead       Int?
   totalPages      Int?
   progressUpdated DateTime?
+  rating          Int?
+  ratedAt         DateTime?
+  review          String?
+  reviewUpdatedAt DateTime?
+  notes           String?
+  notesUpdatedAt  DateTime?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)

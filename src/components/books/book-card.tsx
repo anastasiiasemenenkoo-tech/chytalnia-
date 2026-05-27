@@ -1,7 +1,10 @@
 import { BookCover } from "@/components/books/book-cover";
+import { NotesDialog } from "@/components/books/notes-dialog";
 import { ReadingProgressBar } from "@/components/books/reading-progress-bar";
 import { ReadingProgressDialog } from "@/components/books/reading-progress-dialog";
+import { ReviewDialog } from "@/components/books/review-dialog";
 import { ShelfControls } from "@/components/books/shelf-controls";
+import { StarRating } from "@/components/books/star-rating";
 import { Badge } from "@/components/ui/badge";
 import { SHELF_LABELS } from "@/lib/shelf-labels";
 import type { ShelfValue } from "@/lib/validators";
@@ -15,6 +18,9 @@ export function BookCard({
   finishedAt,
   pagesRead,
   totalPages,
+  rating,
+  review,
+  notes,
 }: {
   userBookId: string;
   title: string;
@@ -24,6 +30,9 @@ export function BookCard({
   finishedAt: Date | null;
   pagesRead: number | null;
   totalPages: number | null;
+  rating: number | null;
+  review: string | null;
+  notes: string | null;
 }) {
   return (
     <article className="bg-card text-card-foreground flex gap-4 rounded-lg border p-4">
@@ -35,6 +44,9 @@ export function BookCard({
           {title}
         </h3>
         <p className="text-muted-foreground truncate text-xs">{author}</p>
+        <div className="mt-2">
+          <StarRating userBookId={userBookId} rating={rating} />
+        </div>
         <div className="mt-2 flex flex-wrap gap-2 text-xs">
           <Badge variant="secondary">{SHELF_LABELS[shelf]}</Badge>
           {finishedAt && (
@@ -66,6 +78,13 @@ export function BookCard({
               totalPages={totalPages}
             />
           )}
+          <ReviewDialog
+            userBookId={userBookId}
+            title={title}
+            rating={rating}
+            review={review}
+          />
+          <NotesDialog userBookId={userBookId} title={title} notes={notes} />
         </div>
       </div>
     </article>

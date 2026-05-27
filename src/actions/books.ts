@@ -7,9 +7,13 @@ import { prisma } from "@/lib/db";
 import { requireCurrentUser } from "@/lib/session";
 import {
   AddBookSchema,
+  ClearRatingSchema,
   ManualAddBookSchema,
   MoveBookSchema,
+  NotesSchema,
+  RatingSchema,
   RemoveBookSchema,
+  ReviewSchema,
   UpdateProgressSchema,
   type ShelfValue,
 } from "@/lib/validators";
@@ -187,5 +191,133 @@ export async function updateReadingProgress(
   revalidatePath("/dashboard");
   // Club page may surface this user's progress for the currently-reading book.
   revalidatePath("/clubs", "layout");
+  return { ok: true };
+}
+
+/**
+ * Ownership check helper — every book-action mutation needs to confirm
+ * the UserBook row belongs to the calling user before touching it.
+ */
+async function assertOwnsUserBook(userBookId: string, userId: string) {
+  const row = await prisma.userBook.findUnique({
+    where: { id: userBookId },
+    select: { userId: true },
+  });
+  if (!row || row.userId !== userId) return false;
+  return true;
+}
+
+export async function setRating(formData: FormData): Promise<ActionResult> {
+  const user = await requireCurrentUser();
+  const parsed = RatingSchema.safeParse({
+    userBookId: formData.get("userBookId"),
+    rating: formData.get("rating"),
+  });
+  if (!parsed.success) return { ok: false, error: "Invalid rating." };
+
+  if (!(await assertOwnsUserBook(parsed.data.userBookId, user.id))) {
+    return { ok: false, error: "Book not found." };
+  }
+
+  await prisma.userBook.update({
+    where: { id: parsed.data.userBookId },
+    data: { rating: parsed.data.rating, ratedAt: new Date() },
+  });
+
+  revalidatePath("/books");
+  revalidatePath("/dashboard");
+  revalidatePath("/clubs", "layout");
+  return { ok: true };
+}
+
+export async function clearRating(formData: FormData): Promise<ActionResult> {
+  const user = await requireCurrentUser();
+  const parsed = ClearRatingSchema.safeParse({
+    userBookId: formData.get("userBookId"),
+  });
+  if (!parsed.success) return { ok: false, error: "Invalid request." };
+
+  if (!(await assertOwnsUserBook(parsed.data.userBookId, user.id))) {
+    return { ok: false, error: "Book not found." };
+  }
+
+  await prisma.userBook.update({
+    where: { id: parsed.data.userBookId },
+    data: { rating: null, ratedAt: null },
+  });
+
+  revalidatePath("/books");
+  revalidatePath("/dashboard");
+  revalidatePath("/clubs", "layout");
+  return { ok: true };
+}
+
+export async function updateReviewAndRating(
+  formData: FormData,
+): Promise<ActionResult> {
+  const user = await requireCurrentUser();
+  const parsed = ReviewSchema.safeParse({
+    userBookId: formData.get("userBookId"),
+    rating: formData.get("rating"),
+    review: formData.get("review") ?? "",
+  });
+  if (!parsed.success) {
+    const issues = parsed.error.flatten().fieldErrors;
+    const first =
+      issues.rating?.[0] ?? issues.review?.[0] ?? "Invalid review.";
+    return { ok: false, error: first };
+  }
+
+  if (!(await assertOwnsUserBook(parsed.data.userBookId, user.id))) {
+    return { ok: false, error: "Book not found." };
+  }
+
+  const reviewText = parsed.data.review?.trim() || null;
+  const now = new Date();
+
+  await prisma.userBook.update({
+    where: { id: parsed.data.userBookId },
+    data: {
+      rating: parsed.data.rating,
+      ratedAt: now,
+      review: reviewText,
+      reviewUpdatedAt: reviewText ? now : null,
+    },
+  });
+
+  revalidatePath("/books");
+  revalidatePath("/dashboard");
+  revalidatePath("/clubs", "layout");
+  return { ok: true };
+}
+
+export async function updateNotes(formData: FormData): Promise<ActionResult> {
+  const user = await requireCurrentUser();
+  const parsed = NotesSchema.safeParse({
+    userBookId: formData.get("userBookId"),
+    notes: formData.get("notes") ?? "",
+  });
+  if (!parsed.success) {
+    return {
+      ok: false,
+      error: parsed.error.flatten().fieldErrors.notes?.[0] ?? "Invalid notes.",
+    };
+  }
+
+  if (!(await assertOwnsUserBook(parsed.data.userBookId, user.id))) {
+    return { ok: false, error: "Book not found." };
+  }
+
+  const notesText = parsed.data.notes?.trim() || null;
+  await prisma.userBook.update({
+    where: { id: parsed.data.userBookId },
+    data: {
+      notes: notesText,
+      notesUpdatedAt: notesText ? new Date() : null,
+    },
+  });
+
+  revalidatePath("/books");
+  revalidatePath("/dashboard");
   return { ok: true };
 }
