@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { randomUUID } from "node:crypto";
 
+import { getDictionary } from "@/i18n";
 import { prisma } from "@/lib/db";
 import { requireCurrentUser } from "@/lib/session";
 import {
@@ -48,7 +49,7 @@ export async function addBookToShelf(formData: FormData): Promise<ActionResult> 
     shelf: formData.get("shelf"),
   });
   if (!parsed.success) {
-    return { ok: false, error: "Invalid book data." };
+    { const dict = await getDictionary(); return { ok: false, error: dict.books.invalidData }; }
   }
 
   const { olid, title, author, coverUrl, shelf } = parsed.data;
@@ -100,14 +101,14 @@ export async function moveBookToShelf(formData: FormData): Promise<ActionResult>
     userBookId: formData.get("userBookId"),
     shelf: formData.get("shelf"),
   });
-  if (!parsed.success) return { ok: false, error: "Invalid shelf change." };
+  if (!parsed.success) { const dict = await getDictionary(); return { ok: false, error: dict.books.invalidData }; }
 
   const existing = await prisma.userBook.findUnique({
     where: { id: parsed.data.userBookId },
     select: { userId: true },
   });
   if (!existing || existing.userId !== user.id) {
-    return { ok: false, error: "Book not found." };
+    { const dict = await getDictionary(); return { ok: false, error: dict.books.notFound }; }
   }
 
   const finishedAt = parsed.data.shelf === "READ" ? new Date() : null;
@@ -128,14 +129,14 @@ export async function removeBookFromShelf(
   const parsed = RemoveBookSchema.safeParse({
     userBookId: formData.get("userBookId"),
   });
-  if (!parsed.success) return { ok: false, error: "Invalid request." };
+  if (!parsed.success) { const dict = await getDictionary(); return { ok: false, error: dict.books.invalidData }; }
 
   const existing = await prisma.userBook.findUnique({
     where: { id: parsed.data.userBookId },
     select: { userId: true },
   });
   if (!existing || existing.userId !== user.id) {
-    return { ok: false, error: "Book not found." };
+    { const dict = await getDictionary(); return { ok: false, error: dict.books.notFound }; }
   }
 
   await prisma.userBook.delete({ where: { id: parsed.data.userBookId } });
@@ -169,7 +170,7 @@ export async function updateReadingProgress(
     select: { userId: true, shelf: true },
   });
   if (!existing || existing.userId !== user.id) {
-    return { ok: false, error: "Book not found." };
+    { const dict = await getDictionary(); return { ok: false, error: dict.books.notFound }; }
   }
 
   const finished = parsed.data.pagesRead >= parsed.data.totalPages;
@@ -213,10 +214,10 @@ export async function setRating(formData: FormData): Promise<ActionResult> {
     userBookId: formData.get("userBookId"),
     rating: formData.get("rating"),
   });
-  if (!parsed.success) return { ok: false, error: "Invalid rating." };
+  if (!parsed.success) { const dict = await getDictionary(); return { ok: false, error: dict.books.invalidData }; }
 
   if (!(await assertOwnsUserBook(parsed.data.userBookId, user.id))) {
-    return { ok: false, error: "Book not found." };
+    { const dict = await getDictionary(); return { ok: false, error: dict.books.notFound }; }
   }
 
   await prisma.userBook.update({
@@ -235,10 +236,10 @@ export async function clearRating(formData: FormData): Promise<ActionResult> {
   const parsed = ClearRatingSchema.safeParse({
     userBookId: formData.get("userBookId"),
   });
-  if (!parsed.success) return { ok: false, error: "Invalid request." };
+  if (!parsed.success) { const dict = await getDictionary(); return { ok: false, error: dict.books.invalidData }; }
 
   if (!(await assertOwnsUserBook(parsed.data.userBookId, user.id))) {
-    return { ok: false, error: "Book not found." };
+    { const dict = await getDictionary(); return { ok: false, error: dict.books.notFound }; }
   }
 
   await prisma.userBook.update({
@@ -269,7 +270,7 @@ export async function updateReviewAndRating(
   }
 
   if (!(await assertOwnsUserBook(parsed.data.userBookId, user.id))) {
-    return { ok: false, error: "Book not found." };
+    { const dict = await getDictionary(); return { ok: false, error: dict.books.notFound }; }
   }
 
   const reviewText = parsed.data.review?.trim() || null;
@@ -305,7 +306,7 @@ export async function updateNotes(formData: FormData): Promise<ActionResult> {
   }
 
   if (!(await assertOwnsUserBook(parsed.data.userBookId, user.id))) {
-    return { ok: false, error: "Book not found." };
+    { const dict = await getDictionary(); return { ok: false, error: dict.books.notFound }; }
   }
 
   const notesText = parsed.data.notes?.trim() || null;

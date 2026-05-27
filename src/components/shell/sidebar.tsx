@@ -11,19 +11,21 @@ import {
   Users,
 } from "lucide-react";
 
+import { useDict } from "@/i18n/provider";
 import { cn } from "@/lib/utils";
 
-type NavItem = { href: string; label: string; icon: LucideIcon };
+type NavItem = { href: string; labelKey: "overview" | "myBooks" | "findBooks" | "clubs"; icon: LucideIcon };
 
 export const NAV: NavItem[] = [
-  { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
-  { href: "/books", label: "My books", icon: Library },
-  { href: "/books/search", label: "Find books", icon: Search },
-  { href: "/clubs", label: "Book clubs", icon: Users },
+  { href: "/dashboard", labelKey: "overview", icon: LayoutDashboard },
+  { href: "/books", labelKey: "myBooks", icon: Library },
+  { href: "/books/search", labelKey: "findBooks", icon: Search },
+  { href: "/clubs", labelKey: "clubs", icon: Users },
 ];
 
 export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
+  const dict = useDict();
   return (
     <nav className="flex flex-1 flex-col gap-1 p-3">
       {NAV.map((item) => {
@@ -44,7 +46,7 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
             )}
           >
             <Icon className="h-4 w-4" />
-            {item.label}
+            {dict.nav[item.labelKey]}
           </Link>
         );
       })}
@@ -53,10 +55,11 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
 }
 
 export function SidebarBrand() {
+  const dict = useDict();
   return (
     <div className="flex h-14 items-center gap-2 border-b px-5 text-base font-semibold">
       <BookOpen className="h-5 w-5" />
-      Bookshelf
+      {dict.brand}
     </div>
   );
 }

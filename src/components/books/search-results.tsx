@@ -1,14 +1,17 @@
 import { AddToShelfButton } from "@/components/books/add-to-shelf-button";
 import { BookCover } from "@/components/books/book-cover";
 import { Card, CardContent } from "@/components/ui/card";
+import { getDictionary } from "@/i18n";
 import type { OpenLibraryHit } from "@/lib/openlibrary";
 
-export function SearchResults({ hits }: { hits: OpenLibraryHit[] }) {
+export async function SearchResults({ hits }: { hits: OpenLibraryHit[] }) {
+  const dict = await getDictionary();
+
   if (hits.length === 0) {
     return (
       <Card>
         <CardContent className="text-muted-foreground py-12 text-center text-sm">
-          No results. Try a different title or author.
+          {dict.books.noResults}
         </CardContent>
       </Card>
     );

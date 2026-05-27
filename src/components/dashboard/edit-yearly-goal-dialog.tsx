@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useDict } from "@/i18n/provider";
 
 export function EditYearlyGoalDialog({
   currentGoal,
@@ -25,13 +26,14 @@ export function EditYearlyGoalDialog({
 }) {
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
+  const dict = useDict();
 
   function onSubmit(formData: FormData) {
     startTransition(async () => {
       const res = await setYearlyGoal(formData);
       if (res.ok) {
         toast.success(
-          formData.get("target") === "0" ? "Goal cleared" : "Goal updated",
+          formData.get("target") === "0" ? dict.goal.cleared : dict.goal.saved,
         );
         setOpen(false);
       } else {
@@ -46,26 +48,23 @@ export function EditYearlyGoalDialog({
         {currentGoal != null ? (
           <>
             <Pencil className="mr-1 h-3.5 w-3.5" />
-            Edit
+            {dict.goal.edit}
           </>
         ) : (
           <>
             <Target className="mr-1 h-3.5 w-3.5" />
-            Set goal
+            {dict.goal.setGoal}
           </>
         )}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Yearly reading goal</DialogTitle>
-          <DialogDescription>
-            How many books would you like to read this year? Set to 0 to clear
-            the goal.
-          </DialogDescription>
+          <DialogTitle>{dict.goal.dialogTitle}</DialogTitle>
+          <DialogDescription>{dict.goal.dialogSubtitle}</DialogDescription>
         </DialogHeader>
         <form action={onSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="target">Books</Label>
+            <Label htmlFor="target">{dict.goal.fieldLabel}</Label>
             <Input
               id="target"
               name="target"
@@ -79,7 +78,7 @@ export function EditYearlyGoalDialog({
           </div>
           <DialogFooter>
             <Button type="submit" disabled={pending}>
-              {pending ? "Saving..." : "Save goal"}
+              {pending ? dict.goal.saving : dict.goal.save}
             </Button>
           </DialogFooter>
         </form>

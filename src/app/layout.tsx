@@ -4,6 +4,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/shell/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { getDictionary, getLocale } from "@/i18n";
+import { I18nProvider } from "@/i18n/provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,17 +17,21 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Bookshelf",
-  description: "Track what you read and run your own book clubs.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const dict = await getDictionary();
+  return {
+    title: dict.brand,
+    description: dict.landing.blurb,
+  };
+}
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const [locale, dict] = await Promise.all([getLocale(), getDictionary()]);
   return (
     <html
-      lang="en"
+      lang={locale}
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
@@ -36,8 +42,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
-          <Toaster richColors closeButton />
+          <I18nProvider dict={dict} locale={locale}>
+            {children}
+            <Toaster richColors closeButton />
+          </I18nProvider>
         </ThemeProvider>
       </body>
     </html>

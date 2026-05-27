@@ -15,29 +15,29 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useDict } from "@/i18n/provider";
 
 export function SignupForm() {
   const [state, action, pending] = useActionState(signupAction, undefined);
+  const dict = useDict();
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Create your account</CardTitle>
-        <CardDescription>
-          Start tracking your reading and join book clubs.
-        </CardDescription>
+        <CardTitle>{dict.auth.signupTitle}</CardTitle>
+        <CardDescription>{dict.auth.signupSubtitle}</CardDescription>
       </CardHeader>
       <form action={action}>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">{dict.auth.name}</Label>
             <Input id="name" name="name" autoComplete="name" required />
             {state?.errors?.name?.[0] && (
               <p className="text-destructive text-sm">{state.errors.name[0]}</p>
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{dict.auth.email}</Label>
             <Input
               id="email"
               name="email"
@@ -52,7 +52,7 @@ export function SignupForm() {
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">{dict.auth.password}</Label>
             <Input
               id="password"
               name="password"
@@ -66,7 +66,7 @@ export function SignupForm() {
               </p>
             )}
             <p className="text-muted-foreground text-xs">
-              At least 8 characters.
+              {dict.auth.passwordHint}
             </p>
           </div>
           {state?.errors?._form?.[0] && (
@@ -75,12 +75,12 @@ export function SignupForm() {
         </CardContent>
         <CardFooter className="mt-4 flex flex-col gap-3">
           <Button type="submit" className="w-full" disabled={pending}>
-            {pending ? "Creating account..." : "Create account"}
+            {pending ? dict.auth.submittingSignup : dict.auth.submitSignup}
           </Button>
           <p className="text-muted-foreground text-sm">
-            Already have an account?{" "}
+            {dict.auth.alreadyHaveAccount}{" "}
             <Link href="/login" className="text-foreground underline">
-              Sign in
+              {dict.auth.signInLink}
             </Link>
           </p>
         </CardFooter>

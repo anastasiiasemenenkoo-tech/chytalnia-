@@ -15,20 +15,22 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useDict } from "@/i18n/provider";
 
 export function LoginForm() {
   const [state, action, pending] = useActionState(loginAction, undefined);
+  const dict = useDict();
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Welcome back</CardTitle>
-        <CardDescription>Sign in to your bookshelf.</CardDescription>
+        <CardTitle>{dict.auth.loginTitle}</CardTitle>
+        <CardDescription>{dict.auth.loginSubtitle}</CardDescription>
       </CardHeader>
       <form action={action}>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{dict.auth.email}</Label>
             <Input
               id="email"
               name="email"
@@ -43,7 +45,7 @@ export function LoginForm() {
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">{dict.auth.password}</Label>
             <Input
               id="password"
               name="password"
@@ -63,12 +65,12 @@ export function LoginForm() {
         </CardContent>
         <CardFooter className="mt-4 flex flex-col gap-3">
           <Button type="submit" className="w-full" disabled={pending}>
-            {pending ? "Signing in..." : "Sign in"}
+            {pending ? dict.auth.submittingLogin : dict.auth.submitLogin}
           </Button>
           <p className="text-muted-foreground text-sm">
-            New here?{" "}
+            {dict.auth.newHere}{" "}
             <Link href="/signup" className="text-foreground underline">
-              Create an account
+              {dict.auth.signupLink}
             </Link>
           </p>
         </CardFooter>

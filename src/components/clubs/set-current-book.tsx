@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useDict } from "@/i18n/provider";
 
 export function SetCurrentBook({
   clubId,
@@ -23,12 +24,11 @@ export function SetCurrentBook({
   options: { id: string; title: string; author: string }[];
 }) {
   const [pending, startTransition] = useTransition();
+  const dict = useDict();
 
   if (options.length === 0) {
     return (
-      <p className="text-muted-foreground text-xs">
-        Add some books to your shelves first, then pick one for the club here.
-      </p>
+      <p className="text-muted-foreground text-xs">{dict.clubs.setEmpty}</p>
     );
   }
 
@@ -36,7 +36,7 @@ export function SetCurrentBook({
     formData.set("clubId", clubId);
     startTransition(async () => {
       const res = await setClubCurrentBook(formData);
-      if (res.ok) toast.success("Updated current book");
+      if (res.ok) toast.success(dict.clubs.setSaved);
       else toast.error(res.error);
     });
   }
@@ -46,7 +46,7 @@ export function SetCurrentBook({
       <div className="flex-1">
         <Select name="bookId" defaultValue={currentBookId ?? undefined}>
           <SelectTrigger>
-            <SelectValue placeholder="Choose a book" />
+            <SelectValue placeholder={dict.clubs.setPlaceholder} />
           </SelectTrigger>
           <SelectContent>
             {options.map((b) => (
@@ -58,7 +58,7 @@ export function SetCurrentBook({
         </Select>
       </div>
       <Button type="submit" disabled={pending}>
-        {pending ? "Saving..." : "Save"}
+        {pending ? dict.clubs.setSaving : dict.clubs.setSave}
       </Button>
     </form>
   );

@@ -17,6 +17,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useDict } from "@/i18n/provider";
+import { interpolate } from "@/i18n/interpolate";
 
 export function ReadingProgressDialog({
   userBookId,
@@ -31,13 +33,14 @@ export function ReadingProgressDialog({
 }) {
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
+  const dict = useDict();
 
   function onSubmit(formData: FormData) {
     formData.set("userBookId", userBookId);
     startTransition(async () => {
       const res = await updateReadingProgress(formData);
       if (res.ok) {
-        toast.success("Progress updated");
+        toast.success(dict.books.progressSaved);
         setOpen(false);
       } else {
         toast.error(res.error);
@@ -45,23 +48,30 @@ export function ReadingProgressDialog({
     });
   }
 
+  const triggerLabel =
+    pagesRead != null && totalPages
+      ? dict.books.progressUpdate
+      : dict.books.progressSet;
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger render={<Button variant="outline" size="sm" />}>
         <BookMarked className="mr-1 h-4 w-4" />
-        {pagesRead != null && totalPages ? "Update progress" : "Set progress"}
+        {triggerLabel}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Reading progress</DialogTitle>
+          <DialogTitle>{dict.books.progressTitle}</DialogTitle>
           <DialogDescription>
-            How far are you into &ldquo;{title}&rdquo;?
+            {interpolate(dict.books.progressSubtitle, { book: title })}
           </DialogDescription>
         </DialogHeader>
         <form action={onSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <Label htmlFor={`pagesRead-${userBookId}`}>Pages read</Label>
+              <Label htmlFor={`pagesRead-${userBookId}`}>
+                {dict.books.progressPagesRead}
+              </Label>
               <Input
                 id={`pagesRead-${userBookId}`}
                 name="pagesRead"
@@ -74,7 +84,9 @@ export function ReadingProgressDialog({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor={`totalPages-${userBookId}`}>Total pages</Label>
+              <Label htmlFor={`totalPages-${userBookId}`}>
+                {dict.books.progressTotalPages}
+              </Label>
               <Input
                 id={`totalPages-${userBookId}`}
                 name="totalPages"
@@ -89,11 +101,11 @@ export function ReadingProgressDialog({
             </div>
           </div>
           <p className="text-muted-foreground text-xs">
-            Marking 100% will move this book to &ldquo;Read&rdquo;.
+            {dict.books.progressHint}
           </p>
           <DialogFooter>
             <Button type="submit" disabled={pending}>
-              {pending ? "Saving..." : "Save progress"}
+              {pending ? dict.books.progressSaving : dict.books.progressSave}
             </Button>
           </DialogFooter>
         </form>

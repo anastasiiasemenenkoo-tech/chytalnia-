@@ -17,6 +17,8 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useDict } from "@/i18n/provider";
+import { interpolate } from "@/i18n/interpolate";
 
 export function NotesDialog({
   userBookId,
@@ -29,6 +31,7 @@ export function NotesDialog({
 }) {
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
+  const dict = useDict();
   const hasNotes = !!notes?.trim();
 
   function onSubmit(formData: FormData) {
@@ -36,7 +39,7 @@ export function NotesDialog({
     startTransition(async () => {
       const res = await updateNotes(formData);
       if (res.ok) {
-        toast.success("Notes saved");
+        toast.success(dict.books.notesSaved);
         setOpen(false);
       } else {
         toast.error(res.error);
@@ -50,10 +53,10 @@ export function NotesDialog({
         render={<Button variant="outline" size="sm" className="relative" />}
       >
         <NotebookPen className="mr-1 h-4 w-4" />
-        Notes
+        {dict.books.notesBtn}
         {hasNotes && (
           <span
-            aria-label="Has notes"
+            aria-label={dict.books.notesPrivate}
             className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-foreground"
           />
         )}
@@ -61,21 +64,20 @@ export function NotesDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            Notes
+            {dict.books.notesTitle}
             <Lock
               className="text-muted-foreground h-3.5 w-3.5"
-              aria-label="Private to you"
+              aria-label={dict.books.notesPrivate}
             />
           </DialogTitle>
           <DialogDescription>
-            Private to you. Use this for highlights, quotes, or your own
-            running thoughts on &ldquo;{title}&rdquo;.
+            {interpolate(dict.books.notesSubtitle, { book: title })}
           </DialogDescription>
         </DialogHeader>
         <form action={onSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor={`notes-${userBookId}`} className="sr-only">
-              Notes
+              {dict.books.notesTitle}
             </Label>
             <Textarea
               id={`notes-${userBookId}`}
@@ -83,12 +85,12 @@ export function NotesDialog({
               rows={8}
               maxLength={4000}
               defaultValue={notes ?? ""}
-              placeholder="Anything you want to remember..."
+              placeholder={dict.books.notesPlaceholder}
             />
           </div>
           <DialogFooter>
             <Button type="submit" disabled={pending}>
-              {pending ? "Saving..." : "Save notes"}
+              {pending ? dict.books.notesSaving : dict.books.notesSave}
             </Button>
           </DialogFooter>
         </form>

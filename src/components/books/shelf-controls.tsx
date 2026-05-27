@@ -13,7 +13,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { SHELF_LABELS } from "@/lib/shelf-labels";
+import { useDict } from "@/i18n/provider";
+import { interpolate } from "@/i18n/interpolate";
 import type { ShelfValue } from "@/lib/validators";
 
 export function ShelfControls({
@@ -24,6 +25,7 @@ export function ShelfControls({
   shelf: ShelfValue;
 }) {
   const [pending, startTransition] = useTransition();
+  const dict = useDict();
 
   function onChange(value: string) {
     if (value === shelf) return;
@@ -33,7 +35,11 @@ export function ShelfControls({
       fd.set("shelf", value);
       const res = await moveBookToShelf(fd);
       if (res.ok) {
-        toast.success(`Moved to "${SHELF_LABELS[value as ShelfValue]}"`);
+        toast.success(
+          interpolate(dict.books.movedTo, {
+            shelf: dict.shelves[value as ShelfValue],
+          }),
+        );
       } else {
         toast.error(res.error);
       }
@@ -45,7 +51,7 @@ export function ShelfControls({
       const fd = new FormData();
       fd.set("userBookId", userBookId);
       const res = await removeBookFromShelf(fd);
-      if (res.ok) toast.success("Removed from your shelves");
+      if (res.ok) toast.success(dict.books.removed);
       else toast.error(res.error);
     });
   }
@@ -57,9 +63,9 @@ export function ShelfControls({
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          {(Object.keys(SHELF_LABELS) as ShelfValue[]).map((s) => (
+          {(["WANT_TO_READ", "READING", "READ"] as const).map((s) => (
             <SelectItem key={s} value={s}>
-              {SHELF_LABELS[s]}
+              {dict.shelves[s]}
             </SelectItem>
           ))}
         </SelectContent>
@@ -71,7 +77,7 @@ export function ShelfControls({
         className="h-8 w-8"
         onClick={onRemove}
         disabled={pending}
-        aria-label="Remove from shelves"
+        aria-label={dict.common.remove}
       >
         <Trash2 className="h-4 w-4" />
       </Button>

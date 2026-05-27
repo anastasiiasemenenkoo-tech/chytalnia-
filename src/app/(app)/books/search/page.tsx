@@ -4,6 +4,7 @@ import { SearchResults } from "@/components/books/search-results";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { getDictionary } from "@/i18n";
 import { searchOpenLibrary } from "@/lib/openlibrary";
 
 export default async function BookSearchPage({
@@ -11,6 +12,7 @@ export default async function BookSearchPage({
 }: {
   searchParams: Promise<{ q?: string }>;
 }) {
+  const dict = await getDictionary();
   const { q } = await searchParams;
   const query = (q ?? "").trim();
   const hits = query ? await searchOpenLibrary(query) : [];
@@ -18,9 +20,11 @@ export default async function BookSearchPage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Find books</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          {dict.books.searchTitle}
+        </h1>
         <p className="text-muted-foreground text-sm">
-          Search Open Library by title or author, then add to one of your shelves.
+          {dict.books.searchSubtitle}
         </p>
       </div>
 
@@ -30,13 +34,13 @@ export default async function BookSearchPage({
             <Input
               type="search"
               name="q"
-              placeholder="The hobbit, Le Guin, Sapiens..."
+              placeholder={dict.books.searchPlaceholder}
               defaultValue={query}
               autoFocus
             />
             <Button type="submit">
               <Search className="mr-2 h-4 w-4" />
-              Search
+              {dict.books.search}
             </Button>
           </form>
         </CardContent>
@@ -47,7 +51,7 @@ export default async function BookSearchPage({
       ) : (
         <Card>
           <CardContent className="text-muted-foreground py-12 text-center text-sm">
-            Type a title or author above to get started.
+            {dict.books.typeToBegin}
           </CardContent>
         </Card>
       )}

@@ -15,26 +15,26 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useDict } from "@/i18n/provider";
 
 export function CreateClubForm() {
   const [state, action, pending] = useActionState(createClubAction, undefined);
+  const dict = useDict();
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Start a book club</CardTitle>
-        <CardDescription>
-          You&apos;ll be the owner. Members can join from the clubs list.
-        </CardDescription>
+        <CardTitle>{dict.clubs.createTitle}</CardTitle>
+        <CardDescription>{dict.clubs.createSubtitle}</CardDescription>
       </CardHeader>
       <form action={action}>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">{dict.clubs.nameLabel}</Label>
             <Input
               id="name"
               name="name"
-              placeholder="Sci-Fi Saturday"
+              placeholder={dict.clubs.namePlaceholder}
               required
             />
             {state?.errors?.name?.[0] && (
@@ -42,12 +42,12 @@ export function CreateClubForm() {
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="description">Description (optional)</Label>
+            <Label htmlFor="description">{dict.clubs.descriptionLabel}</Label>
             <Textarea
               id="description"
               name="description"
               rows={4}
-              placeholder="What's this club about?"
+              placeholder={dict.clubs.descriptionPlaceholder}
             />
             {state?.errors?.description?.[0] && (
               <p className="text-destructive text-sm">
@@ -58,7 +58,7 @@ export function CreateClubForm() {
         </CardContent>
         <CardFooter className="mt-4">
           <Button type="submit" disabled={pending}>
-            {pending ? "Creating..." : "Create club"}
+            {pending ? dict.clubs.creating : dict.clubs.create}
           </Button>
         </CardFooter>
       </form>

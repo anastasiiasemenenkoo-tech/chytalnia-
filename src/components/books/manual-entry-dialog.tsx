@@ -24,20 +24,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { SHELF_LABELS } from "@/lib/shelf-labels";
+import { useDict } from "@/i18n/provider";
 import type { ShelfValue } from "@/lib/validators";
 
 export function ManualEntryDialog() {
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
   const [shelf, setShelf] = useState<ShelfValue>("WANT_TO_READ");
+  const dict = useDict();
 
   function onSubmit(formData: FormData) {
     formData.set("shelf", shelf);
     startTransition(async () => {
       const res = await manualAddBook(formData);
       if (res.ok) {
-        toast.success("Book added.");
+        toast.success(dict.books.manualAdded);
         setOpen(false);
       } else {
         toast.error(res.error);
@@ -49,26 +50,26 @@ export function ManualEntryDialog() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger render={<Button variant="outline" size="sm" />}>
         <Plus className="mr-1 h-4 w-4" />
-        Add manually
+        {dict.books.addManually}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add a book manually</DialogTitle>
-          <DialogDescription>
-            For books that don&apos;t show up in the search.
-          </DialogDescription>
+          <DialogTitle>{dict.books.manualTitle}</DialogTitle>
+          <DialogDescription>{dict.books.manualSubtitle}</DialogDescription>
         </DialogHeader>
         <form action={onSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="manual-title">Title</Label>
+            <Label htmlFor="manual-title">{dict.books.manualTitleLabel}</Label>
             <Input id="manual-title" name="title" required />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="manual-author">Author</Label>
+            <Label htmlFor="manual-author">
+              {dict.books.manualAuthorLabel}
+            </Label>
             <Input id="manual-author" name="author" required />
           </div>
           <div className="space-y-2">
-            <Label>Shelf</Label>
+            <Label>{dict.books.manualShelfLabel}</Label>
             <Select
               value={shelf}
               onValueChange={(v) => setShelf(v as ShelfValue)}
@@ -77,9 +78,9 @@ export function ManualEntryDialog() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {(Object.keys(SHELF_LABELS) as ShelfValue[]).map((s) => (
+                {(["WANT_TO_READ", "READING", "READ"] as const).map((s) => (
                   <SelectItem key={s} value={s}>
-                    {SHELF_LABELS[s]}
+                    {dict.shelves[s]}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -87,7 +88,7 @@ export function ManualEntryDialog() {
           </div>
           <DialogFooter>
             <Button type="submit" disabled={pending}>
-              {pending ? "Adding..." : "Add book"}
+              {pending ? dict.books.manualSubmitting : dict.books.manualSubmit}
             </Button>
           </DialogFooter>
         </form>

@@ -11,13 +11,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { getDictionary } from "@/i18n";
 import { prisma } from "@/lib/db";
 import { requireCurrentUser } from "@/lib/session";
-import { SHELF_LABELS } from "@/lib/shelf-labels";
 import type { ShelfValue } from "@/lib/validators";
+
+const SHELVES: ShelfValue[] = ["WANT_TO_READ", "READING", "READ"];
 
 export default async function DashboardPage() {
   const user = await requireCurrentUser();
+  const dict = await getDictionary();
 
   const year = new Date().getFullYear();
   const yearStart = new Date(year, 0, 1);
@@ -56,17 +59,19 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Overview</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          {dict.dashboard.title}
+        </h1>
         <p className="text-muted-foreground text-sm">
-          A snapshot of your reading life.
+          {dict.dashboard.subtitle}
         </p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {(Object.keys(SHELF_LABELS) as ShelfValue[]).map((shelf) => (
+        {SHELVES.map((shelf) => (
           <Card key={shelf}>
             <CardHeader className="pb-2">
-              <CardDescription>{SHELF_LABELS[shelf]}</CardDescription>
+              <CardDescription>{dict.shelves[shelf]}</CardDescription>
               <CardTitle className="text-3xl">{counts[shelf] ?? 0}</CardTitle>
             </CardHeader>
             <CardContent>
@@ -74,14 +79,14 @@ export default async function DashboardPage() {
                 href={`/books?shelf=${shelf}`}
                 className="text-muted-foreground hover:text-foreground inline-flex items-center text-xs"
               >
-                View <ArrowRight className="ml-1 h-3 w-3" />
+                {dict.dashboard.view} <ArrowRight className="ml-1 h-3 w-3" />
               </Link>
             </CardContent>
           </Card>
         ))}
         <Card>
           <CardHeader className="pb-2">
-            <CardDescription>Book clubs</CardDescription>
+            <CardDescription>{dict.dashboard.bookClubsCard}</CardDescription>
             <CardTitle className="text-3xl">{clubCount}</CardTitle>
           </CardHeader>
           <CardContent>
@@ -89,7 +94,7 @@ export default async function DashboardPage() {
               href="/clubs"
               className="text-muted-foreground hover:text-foreground inline-flex items-center text-xs"
             >
-              Browse <ArrowRight className="ml-1 h-3 w-3" />
+              {dict.dashboard.browse} <ArrowRight className="ml-1 h-3 w-3" />
             </Link>
           </CardContent>
         </Card>
@@ -103,28 +108,30 @@ export default async function DashboardPage() {
 
       <section>
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Currently reading</h2>
+          <h2 className="text-lg font-semibold">
+            {dict.dashboard.currentlyReading}
+          </h2>
           <div className="flex gap-2">
             <Link
               href="/books/search"
               className={buttonVariants({ variant: "outline", size: "sm" })}
             >
               <Search className="mr-2 h-4 w-4" />
-              Find books
+              {dict.dashboard.findBooks}
             </Link>
             <Link
               href="/books"
               className={buttonVariants({ variant: "outline", size: "sm" })}
             >
               <Library className="mr-2 h-4 w-4" />
-              All my books
+              {dict.dashboard.allMyBooks}
             </Link>
             <Link
               href="/clubs"
               className={buttonVariants({ variant: "outline", size: "sm" })}
             >
               <Users className="mr-2 h-4 w-4" />
-              Book clubs
+              {dict.dashboard.clubs}
             </Link>
           </div>
         </div>
@@ -133,13 +140,13 @@ export default async function DashboardPage() {
           <Card>
             <CardContent className="py-12 text-center">
               <p className="text-muted-foreground text-sm">
-                You aren't reading anything right now.
+                {dict.dashboard.notReadingYet}
               </p>
               <Link
                 href="/books/search"
                 className={buttonVariants({ className: "mt-4" })}
               >
-                Find your next book
+                {dict.dashboard.findYourNextBook}
               </Link>
             </CardContent>
           </Card>

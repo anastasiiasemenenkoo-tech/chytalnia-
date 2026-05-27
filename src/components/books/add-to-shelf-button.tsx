@@ -12,7 +12,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { SHELF_LABELS } from "@/lib/shelf-labels";
+import { useDict } from "@/i18n/provider";
+import { interpolate } from "@/i18n/interpolate";
 import type { ShelfValue } from "@/lib/validators";
 
 export function AddToShelfButton({
@@ -27,6 +28,7 @@ export function AddToShelfButton({
   coverUrl: string | null;
 }) {
   const [pending, startTransition] = useTransition();
+  const dict = useDict();
 
   function add(shelf: ShelfValue) {
     startTransition(async () => {
@@ -37,8 +39,13 @@ export function AddToShelfButton({
       fd.set("coverUrl", coverUrl ?? "");
       fd.set("shelf", shelf);
       const res = await addBookToShelf(fd);
-      if (res.ok) toast.success(`Added to "${SHELF_LABELS[shelf]}"`);
-      else toast.error(res.error);
+      if (res.ok) {
+        toast.success(
+          interpolate(dict.books.addedTo, { shelf: dict.shelves[shelf] }),
+        );
+      } else {
+        toast.error(res.error);
+      }
     });
   }
 
@@ -46,12 +53,12 @@ export function AddToShelfButton({
     <DropdownMenu>
       <DropdownMenuTrigger render={<Button size="sm" disabled={pending} />}>
         <Plus className="mr-1 h-4 w-4" />
-        Add
+        {dict.books.add}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        {(Object.keys(SHELF_LABELS) as ShelfValue[]).map((s) => (
+        {(["WANT_TO_READ", "READING", "READ"] as const).map((s) => (
           <DropdownMenuItem key={s} onClick={() => add(s)}>
-            {SHELF_LABELS[s]}
+            {dict.shelves[s]}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

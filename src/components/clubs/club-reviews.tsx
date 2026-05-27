@@ -9,6 +9,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { getDictionary, getLocale } from "@/i18n";
+import { interpolate } from "@/i18n/interpolate";
 import { prisma } from "@/lib/db";
 
 function initials(input: string | null, fallback: string) {
@@ -28,6 +30,9 @@ export async function ClubReviews({
   memberIds: string[];
   bookTitle: string;
 }) {
+  const dict = await getDictionary();
+  const locale = await getLocale();
+
   const reviews = await prisma.userBook.findMany({
     where: {
       bookId,
@@ -48,10 +53,9 @@ export async function ClubReviews({
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Member reviews</CardTitle>
+          <CardTitle>{dict.clubs.reviewsTitle}</CardTitle>
           <CardDescription>
-            No reviews yet. Members can rate and review &ldquo;{bookTitle}
-            &rdquo; from their own bookshelves.
+            {interpolate(dict.clubs.reviewsEmpty, { book: bookTitle })}
           </CardDescription>
         </CardHeader>
       </Card>
@@ -63,10 +67,9 @@ export async function ClubReviews({
       <CardHeader>
         <div className="flex items-center justify-between gap-3">
           <div>
-            <CardTitle>Member reviews</CardTitle>
+            <CardTitle>{dict.clubs.reviewsTitle}</CardTitle>
             <CardDescription>
-              From members who have rated or reviewed &ldquo;{bookTitle}
-              &rdquo;.
+              {interpolate(dict.clubs.reviewsFrom, { book: bookTitle })}
             </CardDescription>
           </div>
           {avgRating != null && (
@@ -76,7 +79,9 @@ export async function ClubReviews({
                 {avgRating.toFixed(1)}
               </div>
               <p className="text-muted-foreground text-xs">
-                {rated.length} {rated.length === 1 ? "rating" : "ratings"}
+                {rated.length === 1
+                  ? dict.clubs.ratingOne
+                  : interpolate(dict.clubs.ratingMany, { n: rated.length })}
               </p>
             </div>
           )}
@@ -107,11 +112,10 @@ export async function ClubReviews({
                 )}
                 {r.reviewUpdatedAt && (
                   <p className="text-muted-foreground text-xs">
-                    {r.reviewUpdatedAt.toLocaleDateString(undefined, {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                    })}
+                    {r.reviewUpdatedAt.toLocaleDateString(
+                      locale === "uk" ? "uk-UA" : "en-US",
+                      { year: "numeric", month: "short", day: "numeric" },
+                    )}
                   </p>
                 )}
               </div>

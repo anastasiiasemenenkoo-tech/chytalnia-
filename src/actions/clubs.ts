@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { getDictionary } from "@/i18n";
 import { prisma } from "@/lib/db";
 import { requireCurrentUser } from "@/lib/session";
 import {
@@ -50,7 +51,7 @@ export async function createClubAction(
 export async function joinClub(formData: FormData): Promise<ActionResult> {
   const user = await requireCurrentUser();
   const parsed = ClubIdSchema.safeParse({ clubId: formData.get("clubId") });
-  if (!parsed.success) return { ok: false, error: "Invalid club." };
+  if (!parsed.success) { const dict = await getDictionary(); return { ok: false, error: dict.clubs.invalid }; }
 
   await prisma.clubMembership.upsert({
     where: {
@@ -72,14 +73,14 @@ export async function joinClub(formData: FormData): Promise<ActionResult> {
 export async function leaveClub(formData: FormData): Promise<ActionResult> {
   const user = await requireCurrentUser();
   const parsed = ClubIdSchema.safeParse({ clubId: formData.get("clubId") });
-  if (!parsed.success) return { ok: false, error: "Invalid club." };
+  if (!parsed.success) { const dict = await getDictionary(); return { ok: false, error: dict.clubs.invalid }; }
 
   const membership = await prisma.clubMembership.findUnique({
     where: { userId_clubId: { userId: user.id, clubId: parsed.data.clubId } },
   });
-  if (!membership) return { ok: false, error: "You are not a member." };
+  if (!membership) { const dict = await getDictionary(); return { ok: false, error: dict.clubs.notMember }; }
   if (membership.role === "OWNER") {
-    return { ok: false, error: "Owners cannot leave their own club." };
+    { const dict = await getDictionary(); return { ok: false, error: dict.clubs.ownerCannotLeave }; }
   }
 
   await prisma.clubMembership.delete({ where: { id: membership.id } });
@@ -97,14 +98,14 @@ export async function setClubCurrentBook(
     clubId: formData.get("clubId"),
     bookId: formData.get("bookId"),
   });
-  if (!parsed.success) return { ok: false, error: "Invalid input." };
+  if (!parsed.success) { const dict = await getDictionary(); return { ok: false, error: dict.clubs.invalid }; }
 
   const club = await prisma.bookClub.findUnique({
     where: { id: parsed.data.clubId },
     select: { ownerId: true },
   });
   if (!club || club.ownerId !== user.id) {
-    return { ok: false, error: "Only the owner can set the current book." };
+    { const dict = await getDictionary(); return { ok: false, error: dict.clubs.setOnlyOwner }; }
   }
 
   await prisma.bookClub.update({

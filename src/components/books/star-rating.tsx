@@ -5,6 +5,8 @@ import { useState, useTransition } from "react";
 import { toast } from "sonner";
 
 import { clearRating, setRating } from "@/actions/books";
+import { useDict } from "@/i18n/provider";
+import { interpolate } from "@/i18n/interpolate";
 import { cn } from "@/lib/utils";
 
 const STARS = [1, 2, 3, 4, 5] as const;
@@ -22,6 +24,7 @@ export function StarRating({
 }) {
   const [hover, setHover] = useState<number | null>(null);
   const [pending, startTransition] = useTransition();
+  const dict = useDict();
 
   const displayed = hover ?? rating ?? 0;
   const dim = size === "md" ? "h-5 w-5" : "h-4 w-4";
@@ -32,14 +35,16 @@ export function StarRating({
       const fd = new FormData();
       fd.set("userBookId", userBookId);
       if (value === rating) {
-        // clicking the current rating clears it
         const res = await clearRating(fd);
-        if (res.ok) toast.success("Rating cleared");
+        if (res.ok) toast.success(dict.books.reviewClearedToast);
         else toast.error(res.error);
       } else {
         fd.set("rating", String(value));
         const res = await setRating(fd);
-        if (res.ok) toast.success(`Rated ${value}/5`);
+        if (res.ok)
+          toast.success(
+            interpolate(dict.books.reviewRatedToast, { n: value }),
+          );
         else toast.error(res.error);
       }
     });
@@ -54,9 +59,6 @@ export function StarRating({
       )}
       onMouseLeave={() => setHover(null)}
       role={readOnly ? "img" : "radiogroup"}
-      aria-label={
-        rating ? `Rated ${rating} out of 5 stars` : "Not rated yet"
-      }
     >
       {STARS.map((v) => {
         const filled = v <= displayed;
@@ -73,7 +75,6 @@ export function StarRating({
                 "hover:scale-110 focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-2",
               readOnly && "cursor-default",
             )}
-            aria-label={`${v} star${v === 1 ? "" : "s"}`}
             aria-pressed={rating === v}
             tabIndex={readOnly ? -1 : 0}
           >

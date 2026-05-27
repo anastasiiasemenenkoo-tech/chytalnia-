@@ -19,6 +19,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { getDictionary } from "@/i18n";
+import { interpolate } from "@/i18n/interpolate";
 import { prisma } from "@/lib/db";
 import { requireCurrentUser } from "@/lib/session";
 
@@ -36,6 +38,7 @@ export default async function ClubDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const user = await requireCurrentUser();
+  const dict = await getDictionary();
   const { id } = await params;
 
   const club = await prisma.bookClub.findUnique({
@@ -83,6 +86,11 @@ export default async function ClubDetailPage({
     author: ub.book.author,
   }));
 
+  const memberLine =
+    club.memberships.length === 1
+      ? dict.clubs.member
+      : interpolate(dict.clubs.members, { n: club.memberships.length });
+
   return (
     <div className="mx-auto max-w-4xl space-y-8">
       <Link
@@ -94,7 +102,7 @@ export default async function ClubDetailPage({
         })}
       >
         <ArrowLeft className="mr-2 h-4 w-4" />
-        Back to clubs
+        {dict.clubs.backToClubs}
       </Link>
 
       <header className="flex flex-wrap items-start justify-between gap-4">
@@ -103,15 +111,14 @@ export default async function ClubDetailPage({
             <h1 className="text-2xl font-semibold tracking-tight">
               {club.name}
             </h1>
-            {isOwner && <Badge variant="secondary">Owner</Badge>}
+            {isOwner && <Badge variant="secondary">{dict.clubs.owner}</Badge>}
           </div>
           {club.description && (
             <p className="text-muted-foreground text-sm">{club.description}</p>
           )}
           <p className="text-muted-foreground inline-flex items-center gap-1 text-xs">
             <Users className="h-3 w-3" />
-            {club.memberships.length}{" "}
-            {club.memberships.length === 1 ? "member" : "members"}
+            {memberLine}
           </p>
         </div>
         <JoinLeaveButton
@@ -126,11 +133,11 @@ export default async function ClubDetailPage({
       <section className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Currently reading</CardTitle>
+            <CardTitle>{dict.clubs.currentlyReadingCardTitle}</CardTitle>
             <CardDescription>
               {isOwner
-                ? "Pick what the club is reading from your shelves."
-                : "Set by the owner."}
+                ? dict.clubs.currentlyReadingOwnerSubtitle
+                : dict.clubs.currentlyReadingMemberSubtitle}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -168,13 +175,13 @@ export default async function ClubDetailPage({
                   />
                 ) : (
                   <p className="text-muted-foreground text-xs">
-                    Add this book to your shelves to track your progress.
+                    {dict.clubs.addBookHint}
                   </p>
                 )}
               </div>
             ) : (
               <p className="text-muted-foreground text-sm">
-                No book selected yet.
+                {dict.clubs.noCurrentBook}
               </p>
             )}
             {isOwner && (
@@ -189,7 +196,7 @@ export default async function ClubDetailPage({
 
         <Card>
           <CardHeader>
-            <CardTitle>Members</CardTitle>
+            <CardTitle>{dict.clubs.membersTitle}</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-3">
@@ -214,7 +221,7 @@ export default async function ClubDetailPage({
                     </div>
                   </div>
                   {m.role === "OWNER" && (
-                    <Badge variant="secondary">Owner</Badge>
+                    <Badge variant="secondary">{dict.clubs.owner}</Badge>
                   )}
                 </li>
               ))}

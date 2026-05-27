@@ -10,8 +10,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { getDictionary } from "@/i18n";
+import { interpolate } from "@/i18n/interpolate";
 
-export function ClubCard({
+export async function ClubCard({
   id,
   name,
   description,
@@ -28,6 +30,12 @@ export function ClubCard({
   isOwner: boolean;
   currentlyReadingTitle: string | null;
 }) {
+  const dict = await getDictionary();
+  const memberLine =
+    memberCount === 1
+      ? dict.clubs.member
+      : interpolate(dict.clubs.members, { n: memberCount });
+
   return (
     <Card className="flex flex-col">
       <CardHeader>
@@ -39,20 +47,22 @@ export function ClubCard({
               </Link>
             </CardTitle>
             <CardDescription className="mt-1 line-clamp-2">
-              {description ?? "No description yet."}
+              {description ?? ""}
             </CardDescription>
           </div>
-          {isOwner && <Badge variant="secondary">Owner</Badge>}
+          {isOwner && <Badge variant="secondary">{dict.clubs.owner}</Badge>}
         </div>
       </CardHeader>
       <CardContent className="mt-auto flex items-center justify-between gap-3">
         <div className="text-muted-foreground flex flex-col gap-1 text-xs">
           <span className="inline-flex items-center gap-1">
             <Users className="h-3 w-3" />
-            {memberCount} {memberCount === 1 ? "member" : "members"}
+            {memberLine}
           </span>
           {currentlyReadingTitle && (
-            <span className="truncate">Reading: {currentlyReadingTitle}</span>
+            <span className="truncate">
+              {dict.clubs.reading}: {currentlyReadingTitle}
+            </span>
           )}
         </div>
         <JoinLeaveButton clubId={id} isMember={isMember} isOwner={isOwner} />

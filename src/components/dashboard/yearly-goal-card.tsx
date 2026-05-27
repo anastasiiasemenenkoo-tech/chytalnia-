@@ -9,8 +9,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { getDictionary } from "@/i18n";
+import { interpolate } from "@/i18n/interpolate";
 
-export function YearlyGoalCard({
+export async function YearlyGoalCard({
   goal,
   readThisYear,
   year,
@@ -19,13 +21,16 @@ export function YearlyGoalCard({
   readThisYear: number;
   year: number;
 }) {
+  const dict = await getDictionary();
+  const cardLabel = interpolate(dict.goal.cardLabel, { year });
+
   if (goal == null) {
     return (
       <Card>
         <CardHeader className="pb-2">
           <CardDescription className="inline-flex items-center gap-1">
             <Target className="h-3.5 w-3.5" />
-            Reading goal · {year}
+            {cardLabel}
           </CardDescription>
           <CardTitle className="text-3xl">—</CardTitle>
         </CardHeader>
@@ -46,13 +51,12 @@ export function YearlyGoalCard({
       <CardHeader className="pb-2">
         <CardDescription className="inline-flex items-center gap-1">
           <Target className="h-3.5 w-3.5" />
-          Reading goal · {year}
+          {cardLabel}
         </CardDescription>
         <CardTitle className="text-3xl">
           {readThisYear}
           <span className="text-muted-foreground text-lg font-normal">
-            {" "}
-            / {goal}
+            {interpolate(dict.goal.suffix, { target: goal })}
           </span>
         </CardTitle>
       </CardHeader>
@@ -60,7 +64,10 @@ export function YearlyGoalCard({
         <Progress value={pct} className="h-1.5" />
         <div className="flex items-center justify-between">
           <p className="text-muted-foreground text-xs">
-            {pct}% · {Math.max(goal - readThisYear, 0)} to go
+            {interpolate(dict.goal.progress, {
+              pct,
+              left: Math.max(goal - readThisYear, 0),
+            })}
           </p>
           <EditYearlyGoalDialog currentGoal={goal} />
         </div>

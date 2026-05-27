@@ -5,6 +5,7 @@ import { toast } from "sonner";
 
 import { joinClub, leaveClub } from "@/actions/clubs";
 import { Button } from "@/components/ui/button";
+import { useDict } from "@/i18n/provider";
 
 export function JoinLeaveButton({
   clubId,
@@ -16,11 +17,12 @@ export function JoinLeaveButton({
   isOwner: boolean;
 }) {
   const [pending, startTransition] = useTransition();
+  const dict = useDict();
 
   if (isOwner) {
     return (
       <Button size="sm" variant="outline" disabled>
-        Owner
+        {dict.clubs.owner}
       </Button>
     );
   }
@@ -31,7 +33,7 @@ export function JoinLeaveButton({
       fd.set("clubId", clubId);
       const res = isMember ? await leaveClub(fd) : await joinClub(fd);
       if (res.ok) {
-        toast.success(isMember ? "Left the club" : "Joined the club");
+        toast.success(isMember ? dict.clubs.leftToast : dict.clubs.joinedToast);
       } else {
         toast.error(res.error);
       }
@@ -45,7 +47,7 @@ export function JoinLeaveButton({
       onClick={onClick}
       disabled={pending}
     >
-      {isMember ? "Leave" : "Join"}
+      {isMember ? dict.clubs.leave : dict.clubs.join}
     </Button>
   );
 }

@@ -5,10 +5,12 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { useDict } from "@/i18n/provider";
 
 export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const dict = useDict();
 
   useEffect(() => setMounted(true), []);
 
@@ -19,7 +21,7 @@ export function ThemeToggle() {
       variant="ghost"
       size="icon"
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      aria-label={isDark ? dict.topbar.lightMode : dict.topbar.darkMode}
     >
       {/* Render both icons to avoid layout shift; hide via opacity once mounted. */}
       <Sun

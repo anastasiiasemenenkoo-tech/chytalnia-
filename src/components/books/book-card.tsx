@@ -6,10 +6,11 @@ import { ReviewDialog } from "@/components/books/review-dialog";
 import { ShelfControls } from "@/components/books/shelf-controls";
 import { StarRating } from "@/components/books/star-rating";
 import { Badge } from "@/components/ui/badge";
-import { SHELF_LABELS } from "@/lib/shelf-labels";
+import { getDictionary, getLocale } from "@/i18n";
+import { interpolate } from "@/i18n/interpolate";
 import type { ShelfValue } from "@/lib/validators";
 
-export function BookCard({
+export async function BookCard({
   userBookId,
   title,
   author,
@@ -34,6 +35,9 @@ export function BookCard({
   review: string | null;
   notes: string | null;
 }) {
+  const dict = await getDictionary();
+  const locale = await getLocale();
+
   return (
     <article className="bg-card text-card-foreground flex gap-4 rounded-lg border p-4">
       <div className="w-20 shrink-0">
@@ -48,14 +52,14 @@ export function BookCard({
           <StarRating userBookId={userBookId} rating={rating} />
         </div>
         <div className="mt-2 flex flex-wrap gap-2 text-xs">
-          <Badge variant="secondary">{SHELF_LABELS[shelf]}</Badge>
+          <Badge variant="secondary">{dict.shelves[shelf]}</Badge>
           {finishedAt && (
             <Badge variant="outline">
-              Finished{" "}
-              {finishedAt.toLocaleDateString(undefined, {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
+              {interpolate(dict.books.finished, {
+                date: finishedAt.toLocaleDateString(
+                  locale === "uk" ? "uk-UA" : "en-US",
+                  { year: "numeric", month: "short", day: "numeric" },
+                ),
               })}
             </Badge>
           )}

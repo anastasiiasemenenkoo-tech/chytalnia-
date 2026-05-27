@@ -4,11 +4,13 @@ import { Plus } from "lucide-react";
 import { ClubCard } from "@/components/clubs/club-card";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { getDictionary } from "@/i18n";
 import { prisma } from "@/lib/db";
 import { requireCurrentUser } from "@/lib/session";
 
 export default async function ClubsPage() {
   const user = await requireCurrentUser();
+  const dict = await getDictionary();
 
   const clubs = await prisma.bookClub.findMany({
     orderBy: { createdAt: "desc" },
@@ -29,23 +31,23 @@ export default async function ClubsPage() {
     <div className="space-y-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Book clubs</h1>
-          <p className="text-muted-foreground text-sm">
-            Join an existing club or start your own.
-          </p>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            {dict.clubs.title}
+          </h1>
+          <p className="text-muted-foreground text-sm">{dict.clubs.subtitle}</p>
         </div>
         <Link href="/clubs/new" className={buttonVariants()}>
           <Plus className="mr-2 h-4 w-4" />
-          New club
+          {dict.clubs.newClub}
         </Link>
       </div>
 
       <section className="space-y-3">
-        <h2 className="text-lg font-semibold">My clubs</h2>
+        <h2 className="text-lg font-semibold">{dict.clubs.mySection}</h2>
         {myClubs.length === 0 ? (
           <Card>
             <CardContent className="text-muted-foreground py-8 text-center text-sm">
-              You haven&apos;t joined any clubs yet.
+              {dict.clubs.emptyMine}
             </CardContent>
           </Card>
         ) : (
@@ -67,15 +69,15 @@ export default async function ClubsPage() {
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Discover</h2>
+        <h2 className="text-lg font-semibold">{dict.clubs.discoverSection}</h2>
         {otherClubs.length === 0 ? (
           <Card>
             <CardContent className="text-muted-foreground py-8 text-center text-sm">
-              No other clubs right now. Be the first to{" "}
+              {dict.clubs.emptyOthersPrefix}
               <Link href="/clubs/new" className="underline">
-                create one
+                {dict.clubs.emptyOthersAction}
               </Link>
-              .
+              {dict.clubs.emptyOthersSuffix}
             </CardContent>
           </Card>
         ) : (

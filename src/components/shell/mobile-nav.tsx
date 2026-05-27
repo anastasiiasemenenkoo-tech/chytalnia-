@@ -11,9 +11,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { useDict } from "@/i18n/provider";
 
 export function MobileNav() {
   const [open, setOpen] = useState(false);
+  const dict = useDict();
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -23,7 +25,7 @@ export function MobileNav() {
             variant="ghost"
             size="icon"
             className="md:hidden"
-            aria-label="Open menu"
+            aria-label={dict.topbar.openMenu}
           />
         }
       >
@@ -33,7 +35,7 @@ export function MobileNav() {
         side="left"
         className="bg-sidebar text-sidebar-foreground flex w-64 flex-col p-0"
       >
-        <SheetTitle className="sr-only">Navigation</SheetTitle>
+        <SheetTitle className="sr-only">{dict.nav.overview}</SheetTitle>
         <SidebarBrand />
         <SidebarNav onNavigate={() => setOpen(false)} />
       </SheetContent>

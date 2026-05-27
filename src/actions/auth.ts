@@ -5,6 +5,7 @@ import { AuthError } from "next-auth";
 import bcrypt from "bcryptjs";
 
 import { signIn, signOut } from "@/auth";
+import { getDictionary } from "@/i18n";
 import { prisma } from "@/lib/db";
 import { requireCurrentUser } from "@/lib/session";
 import {
@@ -41,9 +42,11 @@ export async function signupAction(
 
   const { email, name, password } = parsed.data;
 
+  const dict = await getDictionary();
+
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
-    return { errors: { email: ["An account with this email already exists."] } };
+    return { errors: { email: [dict.auth.emailTaken] } };
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -57,7 +60,7 @@ export async function signupAction(
     });
   } catch (error) {
     if (error instanceof AuthError) {
-      return { errors: { _form: ["Could not sign you in. Please log in."] } };
+      return { errors: { _form: [dict.auth.couldNotSignIn] } };
     }
     throw error;
   }
@@ -85,7 +88,8 @@ export async function loginAction(
     });
   } catch (error) {
     if (error instanceof AuthError) {
-      return { errors: { _form: ["Invalid email or password."] } };
+      const dict = await getDictionary();
+      return { errors: { _form: [dict.auth.invalidCreds] } };
     }
     throw error;
   }
@@ -102,7 +106,8 @@ export async function setYearlyGoal(formData: FormData): Promise<ActionResult> {
     target: formData.get("target"),
   });
   if (!parsed.success) {
-    return { ok: false, error: "Goal must be between 0 and 1000." };
+    const dict = await getDictionary();
+    return { ok: false, error: dict.goal.invalid };
   }
 
   await prisma.user.update({
