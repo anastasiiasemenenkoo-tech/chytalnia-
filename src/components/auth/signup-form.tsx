@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useActionState } from "react";
 
 import { signupAction } from "@/actions/auth";
+import { PasswordInput } from "@/components/auth/password-input";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -53,10 +54,9 @@ export function SignupForm() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">{dict.auth.password}</Label>
-            <Input
+            <PasswordInput
               id="password"
               name="password"
-              type="password"
               autoComplete="new-password"
               required
             />
@@ -68,6 +68,22 @@ export function SignupForm() {
             <p className="text-muted-foreground text-xs">
               {dict.auth.passwordHint}
             </p>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="passwordConfirm">
+              {dict.auth.passwordConfirm}
+            </Label>
+            <PasswordInput
+              id="passwordConfirm"
+              name="passwordConfirm"
+              autoComplete="new-password"
+              required
+            />
+            {state?.errors?.passwordConfirm?.[0] && (
+              <p className="text-destructive text-sm">
+                {dict.auth.passwordMismatch}
+              </p>
+            )}
           </div>
           {state?.errors?._form?.[0] && (
             <p className="text-destructive text-sm">{state.errors._form[0]}</p>

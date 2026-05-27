@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useActionState } from "react";
 
 import { loginAction } from "@/actions/auth";
+import { PasswordInput } from "@/components/auth/password-input";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -46,10 +47,9 @@ export function LoginForm() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">{dict.auth.password}</Label>
-            <Input
+            <PasswordInput
               id="password"
               name="password"
-              type="password"
               autoComplete="current-password"
               required
             />

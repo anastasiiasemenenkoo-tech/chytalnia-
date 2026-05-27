@@ -20,6 +20,7 @@ export type AuthFormState =
       errors?: {
         email?: string[];
         password?: string[];
+        passwordConfirm?: string[];
         name?: string[];
         _form?: string[];
       };
@@ -34,6 +35,7 @@ export async function signupAction(
     email: formData.get("email"),
     name: formData.get("name"),
     password: formData.get("password"),
+    passwordConfirm: formData.get("passwordConfirm"),
   });
 
   if (!parsed.success) {
