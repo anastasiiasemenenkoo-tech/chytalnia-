@@ -27,8 +27,8 @@ export function ShelfControls({
   const [pending, startTransition] = useTransition();
   const dict = useDict();
 
-  function onChange(value: string) {
-    if (value === shelf) return;
+  function onChange(value: ShelfValue | null) {
+    if (!value || value === shelf) return;
     startTransition(async () => {
       const fd = new FormData();
       fd.set("userBookId", userBookId);
@@ -37,7 +37,7 @@ export function ShelfControls({
       if (res.ok) {
         toast.success(
           interpolate(dict.books.movedTo, {
-            shelf: dict.shelves[value as ShelfValue],
+            shelf: dict.shelves[value],
           }),
         );
       } else {

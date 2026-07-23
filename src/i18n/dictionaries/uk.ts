@@ -266,6 +266,6 @@ export const uk = {
     historyEmpty: "Клуб ще нічого не завершив.",
     historyDateRange: "{start} – {end}",
   },
-} as const;
+};
 
 export type Dictionary = typeof uk;
