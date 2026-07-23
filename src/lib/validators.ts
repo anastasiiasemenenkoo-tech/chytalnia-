@@ -96,3 +96,25 @@ export const NotesSchema = z.object({
 export const YearlyGoalSchema = z.object({
   target: z.coerce.number().int().min(0).max(1000),
 });
+
+export const ClubCommentSchema = z.object({
+  clubId: z.string().trim().min(1),
+  body: z.string().trim().min(1, "Write something first.").max(2000),
+  parentId: z.string().trim().min(1).optional().or(z.literal("")),
+});
+
+export const DeleteClubCommentSchema = z.object({
+  clubId: z.string().trim().min(1),
+  commentId: z.string().trim().min(1),
+});
+
+export const ClubScheduleSchema = z
+  .object({
+    clubId: z.string().trim().min(1),
+    startDate: z.string().trim().optional().or(z.literal("")),
+    dueDate: z.string().trim().optional().or(z.literal("")),
+  })
+  .refine(
+    (d) => !d.startDate || !d.dueDate || new Date(d.dueDate) >= new Date(d.startDate),
+    { error: "Due date can't be before the start date.", path: ["dueDate"] },
+  );

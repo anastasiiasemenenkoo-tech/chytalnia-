@@ -22,10 +22,12 @@ function initials(input: string | null, fallback: string) {
 }
 
 export async function ClubReviews({
+  clubId,
   bookId,
   memberIds,
   bookTitle,
 }: {
+  clubId: string;
   bookId: string;
   memberIds: string[];
   bookTitle: string;
@@ -33,11 +35,32 @@ export async function ClubReviews({
   const dict = await getDictionary();
   const locale = await getLocale();
 
+  // Scope to the club's current reading cycle so a review left before this
+  // cycle started (e.g. from an earlier time the club read the same book)
+  // doesn't resurface as if it were about this read-through.
+  const activeCycle = await prisma.clubReadingHistory.findFirst({
+    where: { clubId, bookId, endedAt: null },
+    orderBy: { createdAt: "desc" },
+    select: { createdAt: true },
+  });
+
   const reviews = await prisma.userBook.findMany({
     where: {
       bookId,
       userId: { in: memberIds },
-      OR: [{ rating: { not: null } }, { review: { not: null } }],
+      AND: [
+        { OR: [{ rating: { not: null } }, { review: { not: null } }] },
+        ...(activeCycle
+          ? [
+              {
+                OR: [
+                  { ratedAt: { gte: activeCycle.createdAt } },
+                  { reviewUpdatedAt: { gte: activeCycle.createdAt } },
+                ],
+              },
+            ]
+          : []),
+      ],
     },
     include: { user: { select: { id: true, name: true, email: true } } },
     orderBy: [{ reviewUpdatedAt: "desc" }, { ratedAt: "desc" }],

@@ -27,9 +27,10 @@ model User {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
-  books       UserBook[]
-  memberships ClubMembership[]
-  ownedClubs  BookClub[]       @relation("ClubOwner")
+  books        UserBook[]
+  memberships  ClubMembership[]
+  ownedClubs   BookClub[]       @relation("ClubOwner")
+  clubComments ClubComment[]
 }
 
 model Book {
@@ -40,8 +41,9 @@ model Book {
   coverUrl  String?
   createdAt DateTime @default(now())
 
-  userBooks UserBook[]
-  clubs     BookClub[] @relation("CurrentBook")
+  userBooks   UserBook[]
+  clubs       BookClub[]           @relation("CurrentBook")
+  clubHistory ClubReadingHistory[]
 }
 
 model UserBook {
@@ -76,9 +78,11 @@ model BookClub {
   currentlyReadingBookId String?
   createdAt              DateTime @default(now())
 
-  owner                User             @relation("ClubOwner", fields: [ownerId], references: [id])
-  currentlyReadingBook Book?            @relation("CurrentBook", fields: [currentlyReadingBookId], references: [id])
+  owner                User                 @relation("ClubOwner", fields: [ownerId], references: [id])
+  currentlyReadingBook Book?                 @relation("CurrentBook", fields: [currentlyReadingBookId], references: [id])
   memberships          ClubMembership[]
+  comments             ClubComment[]
+  readingHistory       ClubReadingHistory[]
 }
 
 model ClubMembership {
@@ -92,4 +96,35 @@ model ClubMembership {
   club BookClub @relation(fields: [clubId], references: [id], onDelete: Cascade)
 
   @@unique([userId, clubId])
+}
+
+model ClubReadingHistory {
+  id        String    @id @default(cuid())
+  clubId    String
+  bookId    String
+  startDate DateTime?
+  dueDate   DateTime?
+  createdAt DateTime  @default(now())
+  endedAt   DateTime?
+
+  club BookClub @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  book Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@index([clubId, endedAt])
+}
+
+model ClubComment {
+  id        String   @id @default(cuid())
+  clubId    String
+  authorId  String
+  parentId  String?
+  body      String
+  createdAt DateTime @default(now())
+
+  club    BookClub     @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  author  User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  parent  ClubComment? @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies ClubComment[] @relation("CommentReplies")
+
+  @@index([clubId, createdAt])
 }

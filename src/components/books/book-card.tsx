@@ -48,9 +48,11 @@ export async function BookCard({
           {title}
         </h3>
         <p className="text-muted-foreground truncate text-xs">{author}</p>
-        <div className="mt-2">
-          <StarRating userBookId={userBookId} rating={rating} />
-        </div>
+        {shelf !== "WANT_TO_READ" && (
+          <div className="mt-2">
+            <StarRating userBookId={userBookId} rating={rating} />
+          </div>
+        )}
         <div className="mt-2 flex flex-wrap gap-2 text-xs">
           <Badge variant="secondary">{dict.shelves[shelf]}</Badge>
           {finishedAt && (
@@ -82,12 +84,14 @@ export async function BookCard({
               totalPages={totalPages}
             />
           )}
-          <ReviewDialog
-            userBookId={userBookId}
-            title={title}
-            rating={rating}
-            review={review}
-          />
+          {shelf !== "WANT_TO_READ" && (
+            <ReviewDialog
+              userBookId={userBookId}
+              title={title}
+              rating={rating}
+              review={review}
+            />
+          )}
           <NotesDialog userBookId={userBookId} title={title} notes={notes} />
         </div>
       </div>

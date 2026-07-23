@@ -8,6 +8,7 @@ import { prisma } from "@/lib/db";
 import { requireCurrentUser } from "@/lib/session";
 import {
   ClubIdSchema,
+  ClubScheduleSchema,
   CreateClubSchema,
   SetClubBookSchema,
 } from "@/lib/validators";
@@ -108,10 +109,79 @@ export async function setClubCurrentBook(
     { const dict = await getDictionary(); return { ok: false, error: dict.clubs.setOnlyOwner }; }
   }
 
-  await prisma.bookClub.update({
-    where: { id: parsed.data.clubId },
-    data: { currentlyReadingBookId: parsed.data.bookId },
+  await prisma.$transaction(async (tx) => {
+    const openHistory = await tx.clubReadingHistory.findFirst({
+      where: { clubId: parsed.data.clubId, endedAt: null },
+    });
+    if (openHistory && openHistory.bookId !== parsed.data.bookId) {
+      await tx.clubReadingHistory.update({
+        where: { id: openHistory.id },
+        data: { endedAt: new Date() },
+      });
+    }
+    if (!openHistory || openHistory.bookId !== parsed.data.bookId) {
+      await tx.clubReadingHistory.create({
+        data: { clubId: parsed.data.clubId, bookId: parsed.data.bookId },
+      });
+    }
+    await tx.bookClub.update({
+      where: { id: parsed.data.clubId },
+      data: { currentlyReadingBookId: parsed.data.bookId },
+    });
   });
+
+  revalidatePath(`/clubs/${parsed.data.clubId}`);
+  return { ok: true };
+}
+
+export async function updateClubSchedule(
+  formData: FormData,
+): Promise<ActionResult> {
+  const user = await requireCurrentUser();
+  const dict = await getDictionary();
+  const parsed = ClubScheduleSchema.safeParse({
+    clubId: formData.get("clubId"),
+    startDate: formData.get("startDate") ?? "",
+    dueDate: formData.get("dueDate") ?? "",
+  });
+  if (!parsed.success) {
+    const issues = parsed.error.flatten().fieldErrors;
+    return { ok: false, error: issues.dueDate?.[0] ?? dict.clubs.invalidDates };
+  }
+
+  const club = await prisma.bookClub.findUnique({
+    where: { id: parsed.data.clubId },
+    select: { ownerId: true, currentlyReadingBookId: true },
+  });
+  if (!club || club.ownerId !== user.id) {
+    return { ok: false, error: dict.clubs.setOnlyOwner };
+  }
+  if (!club.currentlyReadingBookId) {
+    return { ok: false, error: dict.clubs.noCurrentBook };
+  }
+
+  const startDate = parsed.data.startDate ? new Date(parsed.data.startDate) : null;
+  const dueDate = parsed.data.dueDate ? new Date(parsed.data.dueDate) : null;
+
+  const openHistory = await prisma.clubReadingHistory.findFirst({
+    where: { clubId: parsed.data.clubId, endedAt: null },
+  });
+
+  if (openHistory) {
+    await prisma.clubReadingHistory.update({
+      where: { id: openHistory.id },
+      data: { startDate, dueDate },
+    });
+  } else {
+    await prisma.clubReadingHistory.create({
+      data: {
+        clubId: parsed.data.clubId,
+        bookId: club.currentlyReadingBookId,
+        startDate,
+        dueDate,
+      },
+    });
+  }
 
   revalidatePath(`/clubs/${parsed.data.clubId}`);
   return { ok: true };

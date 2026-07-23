@@ -5,10 +5,13 @@ import { ArrowLeft, Users } from "lucide-react";
 import { BookCover } from "@/components/books/book-cover";
 import { ReadingProgressBar } from "@/components/books/reading-progress-bar";
 import { ReadingProgressDialog } from "@/components/books/reading-progress-dialog";
+import { ClubDiscussion } from "@/components/clubs/club-discussion";
+import { ClubMembers } from "@/components/clubs/club-members";
+import { ClubReadingHistory } from "@/components/clubs/club-reading-history";
 import { ClubReviews } from "@/components/clubs/club-reviews";
+import { ClubSchedule } from "@/components/clubs/club-schedule";
 import { JoinLeaveButton } from "@/components/clubs/join-leave-button";
 import { SetCurrentBook } from "@/components/clubs/set-current-book";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -23,14 +26,6 @@ import { getDictionary } from "@/i18n";
 import { interpolate } from "@/i18n/interpolate";
 import { prisma } from "@/lib/db";
 import { requireCurrentUser } from "@/lib/session";
-
-function initials(input: string | null, fallback: string) {
-  const src = (input ?? fallback).trim();
-  if (!src) return "?";
-  const parts = src.split(/\s+/);
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-}
 
 export default async function ClubDetailPage({
   params,
@@ -85,6 +80,17 @@ export default async function ClubDetailPage({
     title: ub.book.title,
     author: ub.book.author,
   }));
+
+  const memberProgress = club.currentlyReadingBookId
+    ? await prisma.userBook.findMany({
+        where: {
+          bookId: club.currentlyReadingBookId,
+          userId: { in: club.memberships.map((m) => m.userId) },
+        },
+        select: { userId: true, pagesRead: true, totalPages: true },
+      })
+    : [];
+  const progressByUserId = new Map(memberProgress.map((p) => [p.userId, p]));
 
   const memberLine =
     club.memberships.length === 1
@@ -191,52 +197,31 @@ export default async function ClubDetailPage({
                 options={ownerBookOptions}
               />
             )}
+            {club.currentlyReadingBook && (
+              <ClubSchedule clubId={club.id} isOwner={isOwner} />
+            )}
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>{dict.clubs.membersTitle}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-3">
-              {club.memberships.map((m) => (
-                <li
-                  key={m.id}
-                  className="flex items-center justify-between gap-3"
-                >
-                  <div className="flex items-center gap-3">
-                    <Avatar className="h-8 w-8">
-                      <AvatarFallback className="text-xs">
-                        {initials(m.user.name, m.user.email)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="min-w-0">
-                      <p className="truncate text-sm">
-                        {m.user.name ?? m.user.email}
-                      </p>
-                      <p className="text-muted-foreground truncate text-xs">
-                        {m.user.email}
-                      </p>
-                    </div>
-                  </div>
-                  {m.role === "OWNER" && (
-                    <Badge variant="secondary">{dict.clubs.owner}</Badge>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
+        <ClubMembers
+          memberships={club.memberships}
+          progressByUserId={progressByUserId}
+          hasCurrentBook={!!club.currentlyReadingBook}
+        />
       </section>
 
       {club.currentlyReadingBook && (
         <ClubReviews
+          clubId={club.id}
           bookId={club.currentlyReadingBook.id}
           bookTitle={club.currentlyReadingBook.title}
           memberIds={club.memberships.map((m) => m.userId)}
         />
       )}
+
+      <ClubDiscussion clubId={club.id} currentUserId={user.id} isOwner={isOwner} />
+
+      <ClubReadingHistory clubId={club.id} />
     </div>
   );
 }
