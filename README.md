@@ -1,11 +1,13 @@
-# Bookshelf — Reader Dashboard
+# Читальня — Reader Dashboard & Book Clubs
 
-A personal reader dashboard. Sign up, track books across three shelves
-(**Want to read**, **Reading now**, **Read**), record reading progress,
-search Open Library to add titles with covers, and join or create book
-clubs.
+A personal reader dashboard and online book club. Sign up, track books
+across three shelves (**Want to read**, **Reading now**, **Read**),
+record reading progress, search Open Library to add titles with
+covers, and join or create book clubs — with discussion threads,
+per-member progress, reading schedules/deadlines, and a history of
+what the club has already read.
 
-Built on Next.js 16, React 19, Prisma 7 + SQLite, Auth.js v5, Tailwind v4
+Built on Next.js 16, React 19, Prisma 7 + PostgreSQL, Auth.js v5, Tailwind v4
 and shadcn/ui (base-nova style on `@base-ui/react`).
 
 ---
@@ -16,14 +18,14 @@ and shadcn/ui (base-nova style on `@base-ui/react`).
 # Node 20.9+ required (Next.js 16)
 npm install
 
-# Set up the SQLite DB and generate the Prisma client
-npx prisma migrate dev
-npx prisma generate
-
-# Create .env (see below)
-echo "DATABASE_URL=\"file:./dev.db\"" > .env
+# Create .env (see below) — DATABASE_URL must point at a Postgres instance
+echo "DATABASE_URL=\"postgresql://user:pass@host/db?sslmode=require\"" > .env
 echo "AUTH_SECRET=\"$(openssl rand -base64 32)\"" >> .env
 echo "AUTH_TRUST_HOST=true" >> .env
+
+# Apply migrations and generate the Prisma client
+npx prisma migrate dev
+npx prisma generate
 
 npm run dev   # → http://localhost:3000
 ```
@@ -34,15 +36,18 @@ Sign up at `/signup`, then explore the dashboard.
 > the client automatically. Re-run `npx prisma generate` after any
 > schema change, then restart the dev server.
 
+A free Postgres instance for local dev works fine — e.g. a project on
+[Neon](https://neon.tech).
+
 ---
 
 ## Environment variables
 
 | Variable | Required | Purpose |
 |---|---|---|
-| `DATABASE_URL` | yes | SQLite file path; default `file:./dev.db`. Resolved against the Node CWD, so the DB lives at the project root, not under `prisma/`. |
+| `DATABASE_URL` | yes | Postgres connection string (`postgresql://user:pass@host/db?sslmode=require`). Neon's dashboard gives you this directly after creating a project. |
 | `AUTH_SECRET` | yes | Used by Auth.js to sign session JWTs. Generate with `openssl rand -base64 32`. |
-| `AUTH_TRUST_HOST` | yes (dev) | Auth.js v5 requires this when not running on the default Vercel host. |
+| `AUTH_TRUST_HOST` | yes (dev) / not needed on Vercel | Auth.js v5 requires this when not running on the default Vercel host — Vercel's own host detection covers it in prod. |
 
 `.env` is gitignored.
 
@@ -58,7 +63,7 @@ Sign up at `/signup`, then explore the dashboard.
 | Components | shadcn/ui — **base-nova** style on `@base-ui/react` (note: this style uses `render` prop, not Radix's `asChild`) |
 | Icons | `lucide-react` |
 | Auth | Auth.js v5 (Credentials provider, JWT sessions) |
-| DB | Prisma **7** + SQLite via `@prisma/adapter-better-sqlite3` |
+| DB | Prisma **7** + PostgreSQL via `@prisma/adapter-pg` |
 | Validation | Zod |
 | Theming | `next-themes` (system / light / dark) |
 | Notifications | `sonner` |
@@ -86,21 +91,24 @@ src/
 │     └─ clubs/                       # List, /new, /[id]
 ├─ actions/                           # 'use server' — every mutation
 │  ├─ auth.ts                         # signupAction, loginAction, logoutAction
-│  ├─ books.ts                        # add/move/remove/manualAdd/updateReadingProgress
-│  └─ clubs.ts                        # create/join/leave/setCurrentBook
+│  ├─ books.ts                        # add/move/remove/manualAdd/updateReadingProgress/rating/review
+│  ├─ clubs.ts                        # create/join/leave/setCurrentBook/updateClubSchedule
+│  └─ club-comments.ts                # postClubComment/deleteClubComment
 ├─ components/
 │  ├─ ui/                             # shadcn primitives
 │  ├─ shell/                          # Sidebar, Topbar, MobileNav, ThemeToggle, page-skeletons
 │  ├─ auth/                           # LoginForm, SignupForm (useActionState)
 │  ├─ books/                          # BookCard, ShelfControls, AddToShelfButton, ReadingProgressDialog, …
-│  └─ clubs/                          # ClubCard, JoinLeaveButton, SetCurrentBook, CreateClubForm
+│  └─ clubs/                          # ClubCard, JoinLeaveButton, SetCurrentBook, CreateClubForm,
+│                                      # ClubMembers, ClubDiscussion, CommentThread, ClubSchedule,
+│                                      # ClubReadingHistory
 ├─ lib/
-│  ├─ db.ts                           # Prisma client singleton
+│  ├─ db.ts                           # Prisma client singleton (PrismaPg adapter)
 │  ├─ session.ts                      # getCurrentUser() cached with React `cache()`
 │  ├─ openlibrary.ts                  # Open Library search + cover URL helper
 │  ├─ shelf-labels.ts                 # Shelf enum → user-visible label
 │  ├─ utils.ts                        # cn() — Tailwind class merge
-│  └─ validators.ts                   # Zod schemas (signup, book add, progress, clubs)
+│  └─ validators.ts                   # Zod schemas (signup, book add, progress, clubs, comments, schedule)
 └─ types/next-auth.d.ts               # Module augmentation adding `id` to session.user
 ```
 
@@ -111,16 +119,20 @@ src/
 ```
 User ──┬── UserBook ──── Book ───┐
        │                          │
-       └── ClubMembership ── BookClub ── currentlyReadingBook → Book
+       ├── ClubMembership ── BookClub ── currentlyReadingBook → Book
+       │                          │
+       └── ClubComment ───────────┴── ClubReadingHistory ── Book
 ```
 
 | Model | Purpose |
 |---|---|
 | `User` | Email, optional name, bcrypt-hashed password. |
 | `Book` | Cached Open Library metadata; `olid` is the unique key. Manual entries get `olid = "manual:<cuid>"`. |
-| `UserBook` | Join row carrying shelf, `addedAt`, optional `finishedAt`, `pagesRead`, `totalPages`, `progressUpdated`. Unique on `(userId, bookId)`. |
-| `BookClub` | Name, description, owner, optional `currentlyReadingBookId`. |
+| `UserBook` | Join row carrying shelf, `addedAt`, optional `finishedAt`, `pagesRead`, `totalPages`, `progressUpdated`, `rating`, `review`, `notes`. Unique on `(userId, bookId)`. |
+| `BookClub` | Name, description, owner, optional `currentlyReadingBookId` (denormalized pointer to the active `ClubReadingHistory` row's book). |
 | `ClubMembership` | `OWNER` or `MEMBER`. Unique on `(userId, clubId)`. |
+| `ClubReadingHistory` | One row per reading cycle: `clubId`, `bookId`, optional `startDate`/`dueDate`, `endedAt` (null while active). `setClubCurrentBook` closes the open row and opens a new one whenever the book changes, so past reads and their date ranges are preserved. |
+| `ClubComment` | Club-level discussion. Self-referencing `parentId` (one level of replies only, enforced in the action layer, not the schema). Cascade-deletes with the club or a deleted parent. |
 
 > The Auth.js `Account` / `Session` / `VerificationToken` tables are
 > **deliberately omitted** — with `session: { strategy: "jwt" }` and the
@@ -145,10 +157,14 @@ with Zod.
 | `moveBookToShelf` | Updates `shelf`; stamps `finishedAt` when moved to `READ`. |
 | `removeBookFromShelf` | Deletes the `UserBook` row. |
 | `updateReadingProgress` | Saves `pagesRead`/`totalPages`. Auto-promotes to `READ` and stamps `finishedAt` at 100%. |
+| `setRating` / `clearRating` / `updateReviewAndRating` | Rating and review on a `UserBook` (rating/review UI only shows once a book is off the "Want to read" shelf). |
 | `createClubAction` | Creates the club + `OWNER` membership in a transaction, redirects to the new club. |
 | `joinClub` | Upserts a `MEMBER` membership. |
 | `leaveClub` | Deletes the membership. Returns an error toast if you're the `OWNER`. |
-| `setClubCurrentBook` | Owner-only. Sets the club's `currentlyReadingBookId`. |
+| `setClubCurrentBook` | Owner-only. In a transaction: closes the club's open `ClubReadingHistory` row (if the book actually changed), opens a new one, and updates `currentlyReadingBookId`. |
+| `updateClubSchedule` | Owner-only. Sets `startDate`/`dueDate` on the club's active `ClubReadingHistory` row (creates one on the fly if a legacy club doesn't have one yet). |
+| `postClubComment` | Member-only (checked in-action, not by hiding the form). Optional `parentId`, rejected if it would nest more than one level deep. |
+| `deleteClubComment` | Allowed for the comment's author or the club owner. |
 
 Mutations return `{ ok: boolean; error?: string }`; form-state actions
 return a Zod-shaped `errors` object for `useActionState` to render.
@@ -211,18 +227,46 @@ directly on the `<Link>` rather than wrapping a Button:
 
 ---
 
-## Known limits / non-goals (v1)
+## Deployment
+
+**Recommended: Vercel (app) + Neon (Postgres).** Neon over Supabase here
+because none of Supabase's auth/storage/realtime features are used
+(Auth.js Credentials + JWT sessions need none of that), and Neon is a
+plain managed Postgres — the smallest-diff pairing with the
+`@prisma/adapter-pg` setup already in this repo.
+
+Production env vars:
+
+| Variable | Notes |
+|---|---|
+| `DATABASE_URL` | Neon's pooled connection string. |
+| `AUTH_SECRET` | Generate a **fresh** secret for prod (`openssl rand -base64 32`) — don't reuse the dev one. |
+| `AUTH_TRUST_HOST` | Not needed on Vercel (its host detection satisfies Auth.js v5 automatically). Only set it for non-Vercel hosts. |
+
+Build/deploy pipeline (explicit steps matter here — Prisma 7 does not
+regenerate the client automatically):
+
+1. **Build command:** `npx prisma generate && next build` — plain
+   `next build` alone would ship a stale/missing Prisma client.
+2. **Migrations:** run `npx prisma migrate deploy` against the
+   production `DATABASE_URL` as its own step (a Vercel deploy hook or a
+   CI job), not inside the build command. If DDL doesn't work well over
+   Neon's pooled connection, use Neon's direct (non-pooled) connection
+   string via a separate `DIRECT_URL` for this step.
+3. No `Account`/`Session`/`VerificationToken` migration surface from
+   Auth.js — the Credentials + JWT setup needs none of those tables.
+
+---
+
+## Known limits / non-goals
 
 Deliberately out of scope for this build:
 
 - OAuth / social login (Google, GitHub, …)
 - Email verification, password reset
-- Reviews + ratings
-- Real-time chat or threaded comments in clubs
-- Per-member progress aggregation on the club page (only the current
-  user's progress is shown)
+- Real-time updates (discussion, progress, and reviews are all
+  server-rendered + `revalidatePath`, not websockets/polling)
+- More than one level of comment replies in club discussions
 - Server-side image optimisation for Open Library covers (rendered with
   a plain `<img>` against their CDN)
 - Tests (unit, e2e)
-- Deployment configuration (the SQLite + better-sqlite3 adapter is
-  local-only; a hosted deploy needs swapping to `@prisma/adapter-pg`)
