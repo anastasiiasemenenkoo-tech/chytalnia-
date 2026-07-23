@@ -42,5 +42,12 @@ next-env.d.ts
 
 /src/generated/prisma
 
+# SQLite runtime database (legacy — app now runs on Postgres)
+/dev.db
+/dev.db-journal
+/prisma/*.db
+/prisma/*.db-journal
+
 # claude code local state
-/.claude/
+/.claude/worktrees/
+.claude/settings.local.json

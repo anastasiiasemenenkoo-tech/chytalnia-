@@ -1,0 +1,130 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Shelf {
+  WANT_TO_READ
+  READING
+  READ
+}
+
+enum ClubRole {
+  OWNER
+  MEMBER
+}
+
+model User {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  name           String?
+  hashedPassword String
+  yearlyGoal     Int?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  books        UserBook[]
+  memberships  ClubMembership[]
+  ownedClubs   BookClub[]       @relation("ClubOwner")
+  clubComments ClubComment[]
+}
+
+model Book {
+  id        String   @id @default(cuid())
+  olid      String   @unique
+  title     String
+  author    String
+  coverUrl  String?
+  createdAt DateTime @default(now())
+
+  userBooks   UserBook[]
+  clubs       BookClub[]           @relation("CurrentBook")
+  clubHistory ClubReadingHistory[]
+}
+
+model UserBook {
+  id              String    @id @default(cuid())
+  userId          String
+  bookId          String
+  shelf           Shelf
+  addedAt         DateTime  @default(now())
+  finishedAt      DateTime?
+  pagesRead       Int?
+  totalPages      Int?
+  progressUpdated DateTime?
+  rating          Int?
+  ratedAt         DateTime?
+  review          String?
+  reviewUpdatedAt DateTime?
+  notes           String?
+  notesUpdatedAt  DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, bookId])
+  @@index([userId, shelf])
+}
+
+model BookClub {
+  id                     String   @id @default(cuid())
+  name                   String
+  description            String?
+  ownerId                String
+  currentlyReadingBookId String?
+  createdAt              DateTime @default(now())
+
+  owner                User                 @relation("ClubOwner", fields: [ownerId], references: [id])
+  currentlyReadingBook Book?                 @relation("CurrentBook", fields: [currentlyReadingBookId], references: [id])
+  memberships          ClubMembership[]
+  comments             ClubComment[]
+  readingHistory       ClubReadingHistory[]
+}
+
+model ClubMembership {
+  id       String   @id @default(cuid())
+  userId   String
+  clubId   String
+  role     ClubRole @default(MEMBER)
+  joinedAt DateTime @default(now())
+
+  user User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  club BookClub @relation(fields: [clubId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, clubId])
+}
+
+model ClubReadingHistory {
+  id        String    @id @default(cuid())
+  clubId    String
+  bookId    String
+  startDate DateTime?
+  dueDate   DateTime?
+  createdAt DateTime  @default(now())
+  endedAt   DateTime?
+
+  club BookClub @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  book Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@index([clubId, endedAt])
+}
+
+model ClubComment {
+  id        String   @id @default(cuid())
+  clubId    String
+  authorId  String
+  parentId  String?
+  body      String
+  createdAt DateTime @default(now())
+
+  club    BookClub     @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  author  User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  parent  ClubComment? @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies ClubComment[] @relation("CommentReplies")
+
+  @@index([clubId, createdAt])
+}
