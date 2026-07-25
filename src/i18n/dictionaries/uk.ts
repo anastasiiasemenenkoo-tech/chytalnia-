@@ -48,18 +48,17 @@ export const uk = {
   landing: {
     signIn: "Увійти",
     getStarted: "Почати",
-    headline: "Твоє читацьке життя — в одному охайному списку.",
+    headline: "Твоє читацьке життя — в одному просторі.",
     blurb:
       "Веди особистий журнал прочитаного, того, що читаєш зараз, і того, що чекає попереду. Долучайся до книжкових клубів і дивись, що читають інші.",
     cta: "Створити свою читальню",
     ctaSecondary: "У мене вже є акаунт",
-    featureShelvesTitle: "Три полиці",
+    featureShelvesTitle: "Твої полиці",
     featureShelvesBody:
       "Зберігай те, що хочеш прочитати, що читаєш зараз, і що вже прочитане.",
-    featureSearchTitle: "Пошук в Open Library",
-    featureSearchBody:
-      "Знайди будь-яку книгу за назвою чи автором. Обкладинки безкоштовно.",
-    featureClubsTitle: "Книжкові клуби",
+    featureSearchTitle: "Пошук книг",
+    featureSearchBody: "Знайди будь-яку книгу за назвою чи автором.",
+    featureClubsTitle: "Твої книжкові клуби",
     featureClubsBody:
       "Долучайся до клубу або створи свій і обирай, що читати разом.",
     builtOn: "Зроблено на Next.js 16 · Auth.js · Prisma · Tailwind v4 · shadcn/ui",

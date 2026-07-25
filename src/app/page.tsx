@@ -74,7 +74,7 @@ export default async function Home() {
           {features.map((f) => (
             <div
               key={f.title}
-              className="bg-card text-card-foreground rounded-lg border p-6 text-left"
+              className="bg-card text-card-foreground rounded-lg border p-6 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
             >
               <f.icon className="text-muted-foreground mb-3 h-5 w-5" />
               <h2 className="text-sm font-semibold">{f.title}</h2>
