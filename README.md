@@ -51,6 +51,7 @@ A free Postgres instance for local dev works fine — e.g. a project on
 | `RESEND_API_KEY` | for password-reset emails | API key from [resend.com](https://resend.com). Without it, `requestPasswordResetAction` still creates the reset token but logs the link to the server console instead of emailing it (non-production only) — handy for local dev. |
 | `RESEND_FROM_EMAIL` | no | Sender address for password-reset emails. Defaults to Resend's shared `onboarding@resend.dev` sandbox address. |
 | `APP_URL` | no | Base URL used to build the link inside password-reset emails. Defaults to `http://localhost:3000`. |
+| `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | for Google sign-in | OAuth client credentials from the [Google Cloud Console](https://console.cloud.google.com/apis/credentials). Auth.js v5 picks these up automatically by name — no extra config needed once they're set. Create an "OAuth client ID" (type: Web application) with an authorized redirect URI of `<your-app-url>/api/auth/callback/google` (e.g. `http://localhost:3000/api/auth/callback/google` for local dev). Without these set, the "Continue with Google" button redirects to a Google `invalid_client` error page. |
 
 `.env` is gitignored.
 
@@ -65,7 +66,7 @@ A free Postgres instance for local dev works fine — e.g. a project on
 | Styling | Tailwind v4 (`@import "tailwindcss"`) |
 | Components | shadcn/ui — **base-nova** style on `@base-ui/react` (note: this style uses `render` prop, not Radix's `asChild`) |
 | Icons | `lucide-react` |
-| Auth | Auth.js v5 (Credentials provider, JWT sessions) |
+| Auth | Auth.js v5 (Credentials + Google providers, JWT sessions) |
 | DB | Prisma **7** + PostgreSQL via `@prisma/adapter-pg` |
 | Validation | Zod |
 | Theming | `next-themes` (system / light / dark) |
@@ -130,7 +131,7 @@ User ──┬── UserBook ──── Book ───┐
 
 | Model | Purpose |
 |---|---|
-| `User` | Email, optional name, bcrypt-hashed password. |
+| `User` | Email, optional name, optional bcrypt-hashed password (`null` for Google-only accounts). |
 | `Book` | Cached Open Library metadata; `olid` is the unique key. Manual entries get `olid = "manual:<cuid>"`. |
 | `UserBook` | Join row carrying shelf, `addedAt`, optional `finishedAt`, `pagesRead`, `totalPages`, `progressUpdated`, `rating`, `review`, `notes`. Unique on `(userId, bookId)`. |
 | `BookClub` | Name, description, owner, optional `currentlyReadingBookId` (denormalized pointer to the active `ClubReadingHistory` row's book). |
@@ -140,9 +141,12 @@ User ──┬── UserBook ──── Book ───┐
 | `PasswordResetToken` | `tokenHash` (SHA-256 of the raw token — the raw value is only ever in the emailed link, never stored), `expiresAt` (1 hour), `usedAt` (single use). |
 
 > The Auth.js `Account` / `Session` / `VerificationToken` tables are
-> **deliberately omitted** — with `session: { strategy: "jwt" }` and the
-> Credentials provider, Auth.js writes nothing to the DB, so the adapter
-> is unnecessary.
+> **deliberately omitted**, even with Google added — `session: { strategy: "jwt" }`
+> means Auth.js itself writes nothing to the DB, so no `PrismaAdapter` is
+> needed. Instead, `auth.ts`'s `jwt` callback upserts a `User` row by email
+> on first Google sign-in and stores its id in the token, which is enough
+> to satisfy every other table's foreign key to `User.id` without an
+> adapter's extra tables.
 
 ---
 
@@ -173,6 +177,7 @@ with Zod.
 | `requestPasswordResetAction` | Always reports success regardless of whether the email exists (no account enumeration). Creates a `PasswordResetToken`, emails the link via Resend. |
 | `resetPasswordAction` | Validates the token (hash match, not expired, not used), updates the password, marks the token used, redirects to `/login?reset=1`. |
 | `importGoodreadsCsv` | Parses a Goodreads "Export Library" CSV, upserts a `Book`/`UserBook` per row (shelf, rating, review, private notes, dates), fetching a cover from Open Library by ISBN when available. |
+| `signInWithGoogleAction` | Starts the Google OAuth flow. On first sign-in, `auth.ts`'s `jwt` callback upserts a local `User` row by email (`hashedPassword: null`) so Google accounts plug into the same `User` id that every other table's foreign keys point at. |
 
 Mutations return `{ ok: boolean; error?: string }`; form-state actions
 return a Zod-shaped `errors` object for `useActionState` to render.

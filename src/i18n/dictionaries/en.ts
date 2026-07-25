@@ -101,6 +101,8 @@ export const en: Dictionary = {
       "Someone (hopefully you) asked to reset the password for your Читальня account. This link is valid for 1 hour.",
     resetEmailCta: "Reset password",
     resetEmailIgnore: "If this wasn't you, just ignore this email.",
+    continueWithGoogle: "Continue with Google",
+    orContinueWith: "or",
   },
   dashboard: {
     title: "Overview",

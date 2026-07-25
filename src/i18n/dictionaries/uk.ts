@@ -110,6 +110,8 @@ export const uk = {
       "Хтось (сподіваємось, ти) попросив скинути пароль для акаунту в Читальні. Посилання дійсне 1 годину.",
     resetEmailCta: "Скинути пароль",
     resetEmailIgnore: "Якщо це були не ти — просто ігноруй цей лист.",
+    continueWithGoogle: "Продовжити з Google",
+    orContinueWith: "або",
   },
   dashboard: {
     title: "Огляд",

@@ -109,6 +109,10 @@ export async function logoutAction() {
   await signOut({ redirectTo: "/login" });
 }
 
+export async function signInWithGoogleAction() {
+  await signIn("google", { redirectTo: "/dashboard" });
+}
+
 export type ForgotPasswordState =
   | { errors?: { email?: string[] }; sent?: boolean }
   | undefined;

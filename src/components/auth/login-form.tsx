@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useActionState } from "react";
 
 import { loginAction } from "@/actions/auth";
+import { GoogleSignInButton } from "@/components/auth/google-signin-button";
 import { PasswordInput } from "@/components/auth/password-input";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +17,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import { useDict } from "@/i18n/provider";
 
 export function LoginForm({ justReset = false }: { justReset?: boolean }) {
@@ -28,6 +30,16 @@ export function LoginForm({ justReset = false }: { justReset?: boolean }) {
         <CardTitle>{dict.auth.loginTitle}</CardTitle>
         <CardDescription>{dict.auth.loginSubtitle}</CardDescription>
       </CardHeader>
+      <CardContent className="space-y-4">
+        <GoogleSignInButton />
+        <div className="flex items-center gap-3">
+          <Separator className="flex-1" />
+          <span className="text-muted-foreground text-xs">
+            {dict.auth.orContinueWith}
+          </span>
+          <Separator className="flex-1" />
+        </div>
+      </CardContent>
       <form action={action}>
         <CardContent className="space-y-4">
           {justReset && (
