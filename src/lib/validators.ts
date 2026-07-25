@@ -22,6 +22,24 @@ export const LoginSchema = z.object({
 });
 export type LoginInput = z.infer<typeof LoginSchema>;
 
+export const RequestPasswordResetSchema = z.object({
+  email: z.email("Please enter a valid email.").trim().toLowerCase(),
+});
+
+export const ResetPasswordSchema = z
+  .object({
+    token: z.string().trim().min(1),
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters.")
+      .max(200),
+    passwordConfirm: z.string().min(1, "Please confirm your password."),
+  })
+  .refine((d) => d.password === d.passwordConfirm, {
+    error: "Passwords don't match.",
+    path: ["passwordConfirm"],
+  });
+
 export const ShelfEnum = z.enum(["WANT_TO_READ", "READING", "READ"]);
 export type ShelfValue = z.infer<typeof ShelfEnum>;
 

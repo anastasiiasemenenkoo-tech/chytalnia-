@@ -89,6 +89,27 @@ export const uk = {
     invalidCreds: "Невірна електронна пошта або пароль.",
     emailTaken: "Акаунт з такою поштою вже існує.",
     couldNotSignIn: "Не вдалося увійти. Спробуй ще раз.",
+    forgotPasswordLink: "Забув(-ла) пароль?",
+    forgotPasswordTitle: "Відновлення пароля",
+    forgotPasswordSubtitle:
+      "Вкажи свою пошту — надішлемо посилання для скидання пароля.",
+    forgotPasswordSubmit: "Надіслати посилання",
+    forgotPasswordSubmitting: "Надсилаємо…",
+    forgotPasswordSent:
+      "Якщо акаунт з такою поштою існує, ми надіслали лист із посиланням для скидання пароля.",
+    backToLogin: "До входу",
+    resetPasswordTitle: "Новий пароль",
+    resetPasswordSubtitle: "Придумай новий пароль для свого акаунту.",
+    resetPasswordSubmit: "Зберегти пароль",
+    resetPasswordSubmitting: "Зберігаємо…",
+    resetPasswordSuccess: "Пароль оновлено. Тепер увійди з новим паролем.",
+    resetInvalidToken:
+      "Це посилання недійсне або застаріло. Запроси нове на сторінці відновлення пароля.",
+    resetEmailSubject: "Відновлення пароля — Читальня",
+    resetEmailHeading:
+      "Хтось (сподіваємось, ти) попросив скинути пароль для акаунту в Читальні. Посилання дійсне 1 годину.",
+    resetEmailCta: "Скинути пароль",
+    resetEmailIgnore: "Якщо це були не ти — просто ігноруй цей лист.",
   },
   dashboard: {
     title: "Огляд",

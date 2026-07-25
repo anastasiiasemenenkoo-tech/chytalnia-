@@ -80,6 +80,27 @@ export const en: Dictionary = {
     invalidCreds: "Invalid email or password.",
     emailTaken: "An account with this email already exists.",
     couldNotSignIn: "Could not sign you in. Please log in.",
+    forgotPasswordLink: "Forgot password?",
+    forgotPasswordTitle: "Reset your password",
+    forgotPasswordSubtitle:
+      "Enter your email and we'll send you a link to reset your password.",
+    forgotPasswordSubmit: "Send reset link",
+    forgotPasswordSubmitting: "Sending…",
+    forgotPasswordSent:
+      "If an account with that email exists, we've sent a password reset link.",
+    backToLogin: "Back to login",
+    resetPasswordTitle: "Set a new password",
+    resetPasswordSubtitle: "Choose a new password for your account.",
+    resetPasswordSubmit: "Save password",
+    resetPasswordSubmitting: "Saving…",
+    resetPasswordSuccess: "Password updated. Sign in with your new password.",
+    resetInvalidToken:
+      "This link is invalid or has expired. Request a new one from the reset password page.",
+    resetEmailSubject: "Reset your password — Читальня",
+    resetEmailHeading:
+      "Someone (hopefully you) asked to reset the password for your Читальня account. This link is valid for 1 hour.",
+    resetEmailCta: "Reset password",
+    resetEmailIgnore: "If this wasn't you, just ignore this email.",
   },
   dashboard: {
     title: "Overview",

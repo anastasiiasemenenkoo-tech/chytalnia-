@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useDict } from "@/i18n/provider";
 
-export function LoginForm() {
+export function LoginForm({ justReset = false }: { justReset?: boolean }) {
   const [state, action, pending] = useActionState(loginAction, undefined);
   const dict = useDict();
 
@@ -30,6 +30,11 @@ export function LoginForm() {
       </CardHeader>
       <form action={action}>
         <CardContent className="space-y-4">
+          {justReset && (
+            <p className="text-sm text-emerald-600 dark:text-emerald-400">
+              {dict.auth.resetPasswordSuccess}
+            </p>
+          )}
           <div className="space-y-2">
             <Label htmlFor="email">{dict.auth.email}</Label>
             <Input
@@ -46,7 +51,15 @@ export function LoginForm() {
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">{dict.auth.password}</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="password">{dict.auth.password}</Label>
+              <Link
+                href="/forgot-password"
+                className="text-muted-foreground text-xs underline"
+              >
+                {dict.auth.forgotPasswordLink}
+              </Link>
+            </div>
             <PasswordInput
               id="password"
               name="password"
