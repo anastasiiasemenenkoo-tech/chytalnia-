@@ -181,6 +181,17 @@ export const en: Dictionary = {
     notesSave: "Save notes",
     notesSaving: "Saving…",
     notesSaved: "Notes saved",
+    importLink: "Import from Goodreads",
+    importTitle: "Import from Goodreads",
+    importSubtitle: "Bring your whole reading history over in one file.",
+    importHowToTitle: "How to export from Goodreads",
+    importHowToBody:
+      "On Goodreads: My Books → \"Import and export\" at the bottom of the left menu → \"Export Library\" → wait for the download link → download the CSV and pick it below.",
+    importSubmit: "Upload CSV",
+    importSubmitting: "Importing…",
+    importSuccess: "Done: added {imported}, skipped {skipped}.",
+    importNoFile: "Choose a CSV file.",
+    importEmpty: "No books with a shelf were found in that file.",
   },
   goal: {
     cardLabel: "Reading goal · {year}",

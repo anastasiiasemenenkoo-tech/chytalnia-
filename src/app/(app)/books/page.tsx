@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { Search, Upload } from "lucide-react";
 
 import { BookCard } from "@/components/books/book-card";
 import { ManualEntryDialog } from "@/components/books/manual-entry-dialog";
@@ -53,6 +53,13 @@ export default async function BooksPage({
         </div>
         <div className="flex gap-2">
           <ManualEntryDialog />
+          <Link
+            href="/books/import"
+            className={buttonVariants({ variant: "outline", size: "sm" })}
+          >
+            <Upload className="mr-2 h-4 w-4" />
+            {dict.books.importLink}
+          </Link>
           <Link
             href="/books/search"
             className={buttonVariants({ size: "sm" })}

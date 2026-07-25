@@ -48,6 +48,9 @@ A free Postgres instance for local dev works fine — e.g. a project on
 | `DATABASE_URL` | yes | Postgres connection string (`postgresql://user:pass@host/db?sslmode=require`). Neon's dashboard gives you this directly after creating a project. |
 | `AUTH_SECRET` | yes | Used by Auth.js to sign session JWTs. Generate with `openssl rand -base64 32`. |
 | `AUTH_TRUST_HOST` | yes (dev) / not needed on Vercel | Auth.js v5 requires this when not running on the default Vercel host — Vercel's own host detection covers it in prod. |
+| `RESEND_API_KEY` | for password-reset emails | API key from [resend.com](https://resend.com). Without it, `requestPasswordResetAction` still creates the reset token but logs the link to the server console instead of emailing it (non-production only) — handy for local dev. |
+| `RESEND_FROM_EMAIL` | no | Sender address for password-reset emails. Defaults to Resend's shared `onboarding@resend.dev` sandbox address. |
+| `APP_URL` | no | Base URL used to build the link inside password-reset emails. Defaults to `http://localhost:3000`. |
 
 `.env` is gitignored.
 
@@ -90,10 +93,11 @@ src/
 │     ├─ books/                       # /books (filter by shelf) + /books/search (Open Library)
 │     └─ clubs/                       # List, /new, /[id]
 ├─ actions/                           # 'use server' — every mutation
-│  ├─ auth.ts                         # signupAction, loginAction, logoutAction
+│  ├─ auth.ts                         # signup/login/logout, requestPasswordReset, resetPassword
 │  ├─ books.ts                        # add/move/remove/manualAdd/updateReadingProgress/rating/review
 │  ├─ clubs.ts                        # create/join/leave/setCurrentBook/updateClubSchedule
-│  └─ club-comments.ts                # postClubComment/deleteClubComment
+│  ├─ club-comments.ts                # postClubComment/deleteClubComment
+│  └─ goodreads-import.ts             # importGoodreadsCsv
 ├─ components/
 │  ├─ ui/                             # shadcn primitives
 │  ├─ shell/                          # Sidebar, Topbar, MobileNav, ThemeToggle, page-skeletons
@@ -133,6 +137,7 @@ User ──┬── UserBook ──── Book ───┐
 | `ClubMembership` | `OWNER` or `MEMBER`. Unique on `(userId, clubId)`. |
 | `ClubReadingHistory` | One row per reading cycle: `clubId`, `bookId`, optional `startDate`/`dueDate`, `endedAt` (null while active). `setClubCurrentBook` closes the open row and opens a new one whenever the book changes, so past reads and their date ranges are preserved. |
 | `ClubComment` | Club-level discussion. Self-referencing `parentId` (one level of replies only, enforced in the action layer, not the schema). Cascade-deletes with the club or a deleted parent. |
+| `PasswordResetToken` | `tokenHash` (SHA-256 of the raw token — the raw value is only ever in the emailed link, never stored), `expiresAt` (1 hour), `usedAt` (single use). |
 
 > The Auth.js `Account` / `Session` / `VerificationToken` tables are
 > **deliberately omitted** — with `session: { strategy: "jwt" }` and the
@@ -165,6 +170,9 @@ with Zod.
 | `updateClubSchedule` | Owner-only. Sets `startDate`/`dueDate` on the club's active `ClubReadingHistory` row (creates one on the fly if a legacy club doesn't have one yet). |
 | `postClubComment` | Member-only (checked in-action, not by hiding the form). Optional `parentId`, rejected if it would nest more than one level deep. |
 | `deleteClubComment` | Allowed for the comment's author or the club owner. |
+| `requestPasswordResetAction` | Always reports success regardless of whether the email exists (no account enumeration). Creates a `PasswordResetToken`, emails the link via Resend. |
+| `resetPasswordAction` | Validates the token (hash match, not expired, not used), updates the password, marks the token used, redirects to `/login?reset=1`. |
+| `importGoodreadsCsv` | Parses a Goodreads "Export Library" CSV, upserts a `Book`/`UserBook` per row (shelf, rating, review, private notes, dates), fetching a cover from Open Library by ISBN when available. |
 
 Mutations return `{ ok: boolean; error?: string }`; form-state actions
 return a Zod-shaped `errors` object for `useActionState` to render.

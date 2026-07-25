@@ -190,6 +190,18 @@ export const uk = {
     notesSave: "Зберегти нотатки",
     notesSaving: "Зберігаємо…",
     notesSaved: "Нотатки збережено",
+    importLink: "Імпорт з Goodreads",
+    importTitle: "Імпорт з Goodreads",
+    importSubtitle:
+      "Перенеси всю свою читацьку історію з Goodreads одним файлом.",
+    importHowToTitle: "Як експортувати з Goodreads",
+    importHowToBody:
+      "На Goodreads: My Books → внизу лівого меню «Import and export» → «Export Library» → зачекай на посилання для завантаження → завантаж CSV-файл і вибери його нижче.",
+    importSubmit: "Завантажити CSV",
+    importSubmitting: "Імпортуємо…",
+    importSuccess: "Готово: додано {imported}, пропущено {skipped}.",
+    importNoFile: "Обери CSV-файл.",
+    importEmpty: "У файлі не знайдено жодної книги з полицею.",
   },
   goal: {
     cardLabel: "Ціль читання · {year}",
