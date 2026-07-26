@@ -1,7 +1,7 @@
 import type { Dictionary } from "@/i18n/dictionaries/uk";
 
 export const en: Dictionary = {
-  brand: "Читальня",
+  brand: "Chytal'nia",
   tagline: "your reading space",
   common: {
     save: "Save",
@@ -96,9 +96,9 @@ export const en: Dictionary = {
     resetPasswordSuccess: "Password updated. Sign in with your new password.",
     resetInvalidToken:
       "This link is invalid or has expired. Request a new one from the reset password page.",
-    resetEmailSubject: "Reset your password — Читальня",
+    resetEmailSubject: "Reset your password — Chytal'nia",
     resetEmailHeading:
-      "Someone (hopefully you) asked to reset the password for your Читальня account. This link is valid for 1 hour.",
+      "Someone (hopefully you) asked to reset the password for your Chytal'nia account. This link is valid for 1 hour.",
     resetEmailCta: "Reset password",
     resetEmailIgnore: "If this wasn't you, just ignore this email.",
     continueWithGoogle: "Continue with Google",

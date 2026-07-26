@@ -77,9 +77,10 @@ export default async function DashboardPage() {
             <CardContent>
               <Link
                 href={`/books?shelf=${shelf}`}
-                className="text-muted-foreground hover:text-foreground inline-flex items-center text-xs"
+                className="text-muted-foreground hover:text-foreground group inline-flex items-center text-xs transition-colors"
               >
-                {dict.dashboard.view} <ArrowRight className="ml-1 h-3 w-3" />
+                {dict.dashboard.view}{" "}
+                <ArrowRight className="ml-1 h-3 w-3 transition-transform duration-200 group-hover:translate-x-0.5" />
               </Link>
             </CardContent>
           </Card>
@@ -92,9 +93,10 @@ export default async function DashboardPage() {
           <CardContent>
             <Link
               href="/clubs"
-              className="text-muted-foreground hover:text-foreground inline-flex items-center text-xs"
+              className="text-muted-foreground hover:text-foreground group inline-flex items-center text-xs transition-colors"
             >
-              {dict.dashboard.browse} <ArrowRight className="ml-1 h-3 w-3" />
+              {dict.dashboard.browse}{" "}
+              <ArrowRight className="ml-1 h-3 w-3 transition-transform duration-200 group-hover:translate-x-0.5" />
             </Link>
           </CardContent>
         </Card>

@@ -39,9 +39,13 @@ export async function BookCard({
   const locale = await getLocale();
 
   return (
-    <article className="bg-card text-card-foreground flex gap-4 rounded-lg border p-4">
-      <div className="w-20 shrink-0">
-        <BookCover src={coverUrl} alt={title} />
+    <article className="bg-card text-card-foreground flex gap-4 rounded-lg border p-4 shadow-sm transition-shadow duration-200 hover:shadow-md">
+      <div className="w-20 shrink-0 overflow-hidden rounded-md">
+        <BookCover
+          src={coverUrl}
+          alt={title}
+          className="transition-transform duration-200 hover:scale-105"
+        />
       </div>
       <div className="flex min-w-0 flex-1 flex-col">
         <h3 className="text-sm leading-snug font-medium" title={title}>
