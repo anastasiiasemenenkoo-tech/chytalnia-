@@ -15,16 +15,19 @@ export default async function Home() {
       icon: Library,
       title: dict.landing.featureShelvesTitle,
       body: dict.landing.featureShelvesBody,
+      href: "/books",
     },
     {
       icon: Search,
       title: dict.landing.featureSearchTitle,
       body: dict.landing.featureSearchBody,
+      href: "/books/search",
     },
     {
       icon: Users,
       title: dict.landing.featureClubsTitle,
       body: dict.landing.featureClubsBody,
+      href: "/clubs",
     },
   ];
 
@@ -72,14 +75,18 @@ export default async function Home() {
 
         <div className="mt-20 grid w-full max-w-4xl gap-6 sm:grid-cols-3">
           {features.map((f) => (
-            <div
+            <Link
               key={f.title}
-              className="bg-card text-card-foreground rounded-lg border p-6 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+              href={f.href}
+              // These all sit behind auth; prefetching them from the public
+              // landing page just triggers a server-side "Not authenticated".
+              prefetch={false}
+              className="bg-card text-card-foreground focus-visible:ring-ring block rounded-lg border p-6 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-2 focus-visible:outline-none"
             >
               <f.icon className="text-muted-foreground mb-3 h-5 w-5" />
               <h2 className="text-sm font-semibold">{f.title}</h2>
               <p className="text-muted-foreground mt-1 text-sm">{f.body}</p>
-            </div>
+            </Link>
           ))}
         </div>
       </main>

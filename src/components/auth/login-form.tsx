@@ -54,6 +54,7 @@ export function LoginForm({ justReset = false }: { justReset?: boolean }) {
               name="email"
               type="email"
               autoComplete="email"
+              defaultValue={state?.values?.email ?? ""}
               required
             />
             {state?.errors?.email?.[0] && (

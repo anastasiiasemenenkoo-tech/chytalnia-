@@ -44,7 +44,13 @@ export function SignupForm() {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name">{dict.auth.name}</Label>
-            <Input id="name" name="name" autoComplete="name" required />
+            <Input
+              id="name"
+              name="name"
+              autoComplete="name"
+              defaultValue={state?.values?.name ?? ""}
+              required
+            />
             {state?.errors?.name?.[0] && (
               <p className="text-destructive text-sm">{state.errors.name[0]}</p>
             )}
@@ -56,6 +62,7 @@ export function SignupForm() {
               name="email"
               type="email"
               autoComplete="email"
+              defaultValue={state?.values?.email ?? ""}
               required
             />
             {state?.errors?.email?.[0] && (
@@ -93,7 +100,7 @@ export function SignupForm() {
             />
             {state?.errors?.passwordConfirm?.[0] && (
               <p className="text-destructive text-sm">
-                {dict.auth.passwordMismatch}
+                {state.errors.passwordConfirm[0]}
               </p>
             )}
           </div>

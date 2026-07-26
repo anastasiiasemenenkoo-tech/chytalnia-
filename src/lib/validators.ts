@@ -1,42 +1,48 @@
 import { z } from "zod";
 
+// Auth validation messages are emitted as keys, not prose: the server action
+// swaps them for the user's locale via dict.auth.validation before rendering.
+// Letters (any alphabet), spaces, apostrophes and hyphens — no digits.
+const NAME_PATTERN = /^[\p{L}][\p{L}\s'’-]*$/u;
+
+const nameField = z
+  .string()
+  .trim()
+  .min(1, "nameRequired")
+  .max(80)
+  .regex(NAME_PATTERN, "nameLettersOnly");
+
 export const SignupSchema = z
   .object({
-    email: z.email("Please enter a valid email.").trim().toLowerCase(),
-    name: z.string().trim().min(1, "Please enter your name.").max(80),
-    password: z
-      .string()
-      .min(8, "Password must be at least 8 characters.")
-      .max(200),
-    passwordConfirm: z.string().min(1, "Please confirm your password."),
+    email: z.email("invalidEmail").trim().toLowerCase(),
+    name: nameField,
+    password: z.string().min(8, "passwordTooShort").max(200),
+    passwordConfirm: z.string().min(1, "passwordConfirmRequired"),
   })
   .refine((d) => d.password === d.passwordConfirm, {
-    error: "Passwords don't match.",
+    error: "passwordsDontMatch",
     path: ["passwordConfirm"],
   });
 export type SignupInput = z.infer<typeof SignupSchema>;
 
 export const LoginSchema = z.object({
-  email: z.email("Please enter a valid email.").trim().toLowerCase(),
-  password: z.string().min(1, "Please enter your password."),
+  email: z.email("invalidEmail").trim().toLowerCase(),
+  password: z.string().min(1, "passwordRequired"),
 });
 export type LoginInput = z.infer<typeof LoginSchema>;
 
 export const RequestPasswordResetSchema = z.object({
-  email: z.email("Please enter a valid email.").trim().toLowerCase(),
+  email: z.email("invalidEmail").trim().toLowerCase(),
 });
 
 export const ResetPasswordSchema = z
   .object({
     token: z.string().trim().min(1),
-    password: z
-      .string()
-      .min(8, "Password must be at least 8 characters.")
-      .max(200),
-    passwordConfirm: z.string().min(1, "Please confirm your password."),
+    password: z.string().min(8, "passwordTooShort").max(200),
+    passwordConfirm: z.string().min(1, "passwordConfirmRequired"),
   })
   .refine((d) => d.password === d.passwordConfirm, {
-    error: "Passwords don't match.",
+    error: "passwordsDontMatch",
     path: ["passwordConfirm"],
   });
 

@@ -55,6 +55,7 @@ export function ForgotPasswordForm() {
               name="email"
               type="email"
               autoComplete="email"
+              defaultValue={state?.values?.email ?? ""}
               required
             />
             {state?.errors?.email?.[0] && (
