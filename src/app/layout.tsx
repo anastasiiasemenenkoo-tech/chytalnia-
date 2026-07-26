@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Literata } from "next/font/google";
 
 import "./globals.css";
 import { ThemeProvider } from "@/components/shell/theme-provider";
@@ -15,6 +15,14 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+// Literata was drawn for long-form reading and carries a full Cyrillic set,
+// so headings stay in character for both locales.
+const literata = Literata({
+  variable: "--font-literata",
+  subsets: ["latin", "cyrillic"],
+  display: "swap",
 });
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -33,7 +41,7 @@ export default async function RootLayout({
     <html
       lang={locale}
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${literata.variable} h-full antialiased`}
     >
       <body className="bg-background text-foreground min-h-full">
         <ThemeProvider
