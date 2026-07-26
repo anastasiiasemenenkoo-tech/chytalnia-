@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "Shelf" ADD VALUE 'ABANDONED';

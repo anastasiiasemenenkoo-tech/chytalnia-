@@ -11,6 +11,7 @@ enum Shelf {
   WANT_TO_READ
   READING
   READ
+  ABANDONED
 }
 
 enum ClubRole {

@@ -46,7 +46,12 @@ export const ResetPasswordSchema = z
     path: ["passwordConfirm"],
   });
 
-export const ShelfEnum = z.enum(["WANT_TO_READ", "READING", "READ"]);
+export const ShelfEnum = z.enum([
+  "WANT_TO_READ",
+  "READING",
+  "READ",
+  "ABANDONED",
+]);
 export type ShelfValue = z.infer<typeof ShelfEnum>;
 
 export const AddBookSchema = z.object({

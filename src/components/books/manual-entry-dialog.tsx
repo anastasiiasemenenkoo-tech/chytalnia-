@@ -78,7 +78,7 @@ export function ManualEntryDialog() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {(["WANT_TO_READ", "READING", "READ"] as const).map((s) => (
+                {(["WANT_TO_READ", "READING", "READ", "ABANDONED"] as const).map((s) => (
                   <SelectItem key={s} value={s}>
                     {dict.shelves[s]}
                   </SelectItem>

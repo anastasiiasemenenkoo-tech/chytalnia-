@@ -56,7 +56,7 @@ export function AddToShelfButton({
         {dict.books.add}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        {(["WANT_TO_READ", "READING", "READ"] as const).map((s) => (
+        {(["WANT_TO_READ", "READING", "READ", "ABANDONED"] as const).map((s) => (
           <DropdownMenuItem key={s} onClick={() => add(s)}>
             {dict.shelves[s]}
           </DropdownMenuItem>

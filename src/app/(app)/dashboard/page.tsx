@@ -16,7 +16,12 @@ import { prisma } from "@/lib/db";
 import { requireCurrentUser } from "@/lib/session";
 import type { ShelfValue } from "@/lib/validators";
 
-const SHELVES: ShelfValue[] = ["WANT_TO_READ", "READING", "READ"];
+const SHELVES: ShelfValue[] = [
+  "WANT_TO_READ",
+  "READING",
+  "READ",
+  "ABANDONED",
+];
 
 export default async function DashboardPage() {
   const user = await requireCurrentUser();
@@ -67,7 +72,7 @@ export default async function DashboardPage() {
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         {SHELVES.map((shelf) => (
           <Card key={shelf}>
             <CardHeader className="pb-2">

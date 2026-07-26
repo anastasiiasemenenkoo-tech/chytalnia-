@@ -40,6 +40,7 @@ export default async function BooksPage({
     { value: "READING", label: dict.shelves.READING },
     { value: "WANT_TO_READ", label: dict.shelves.WANT_TO_READ },
     { value: "READ", label: dict.shelves.READ },
+    { value: "ABANDONED", label: dict.shelves.ABANDONED },
   ];
 
   return (
@@ -97,11 +98,13 @@ export default async function BooksPage({
         <Card>
           <CardContent className="py-12 text-center">
             <p className="text-muted-foreground text-sm">
-              {activeShelf
-                ? interpolate(dict.books.emptyShelf, {
-                    label: dict.shelves[activeShelf],
-                  })
-                : dict.books.emptyAll}
+              {activeShelf === "ABANDONED"
+                ? dict.books.emptyAbandoned
+                : activeShelf
+                  ? interpolate(dict.books.emptyShelf, {
+                      label: dict.shelves[activeShelf],
+                    })
+                  : dict.books.emptyAll}
             </p>
             <Link
               href="/books/search"
