@@ -140,7 +140,7 @@ export const en: Dictionary = {
     findFirst: "Find your first book",
     searchTitle: "Find books",
     searchSubtitle:
-      "Search Open Library by title or author, then add to one of your shelves.",
+      "Millions of books waiting in Open Library. Find yours, then shelve it.",
     searchPlaceholder: "The hobbit, Le Guin, Sapiens…",
     search: "Search",
     typeToBegin: "A title, an author, a few letters — start anywhere.",
