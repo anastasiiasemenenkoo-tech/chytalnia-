@@ -61,7 +61,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
             />
             {state?.errors?.passwordConfirm?.[0] && (
               <p className="text-destructive text-sm">
-                {dict.auth.passwordMismatch}
+                {state.errors.passwordConfirm[0]}
               </p>
             )}
           </div>

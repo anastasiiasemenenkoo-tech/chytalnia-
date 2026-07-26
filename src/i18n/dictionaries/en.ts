@@ -66,7 +66,6 @@ export const en: Dictionary = {
     password: "Password",
     passwordConfirm: "Confirm password",
     passwordHint: "At least 8 characters.",
-    passwordMismatch: "Passwords don't match.",
     showPassword: "Show password",
     hidePassword: "Hide password",
     submitSignup: "Create account",
@@ -103,6 +102,16 @@ export const en: Dictionary = {
     resetEmailIgnore: "If this wasn't you, just ignore this email.",
     continueWithGoogle: "Continue with Google",
     orContinueWith: "or",
+    validation: {
+      invalidEmail: "No letter would ever reach that address. Care to re-read it?",
+      nameRequired: "What should we call you? A name, please.",
+      nameLettersOnly: "Letters only — let's save the digits for page numbers.",
+      passwordTooShort:
+        "That's more of a blurb than a password. At least 8 characters, please.",
+      passwordRequired: "A blank page is lovely, but we need a password here.",
+      passwordConfirmRequired: "One more time, just to be sure.",
+      passwordsDontMatch: "These two lost the plot. Shall we compare again?",
+    },
   },
   dashboard: {
     title: "Overview",

@@ -31,13 +31,41 @@ export type AuthFormState =
         name?: string[];
         _form?: string[];
       };
+      // Echoed back so a failed submit doesn't wipe what the user typed.
+      // Passwords are deliberately left out — they'd end up in the HTML payload.
+      values?: { email?: string; name?: string };
     }
   | undefined;
+
+function text(formData: FormData, key: string): string {
+  const value = formData.get(key);
+  return typeof value === "string" ? value : "";
+}
+
+type ValidationDict = Awaited<
+  ReturnType<typeof getDictionary>
+>["auth"]["validation"];
+
+// The auth schemas emit dictionary keys instead of prose (see validators.ts);
+// swap them for the current locale, leaving anything unrecognised as-is.
+function localize<T extends Record<string, string[] | undefined>>(
+  fieldErrors: T,
+  validation: ValidationDict,
+): T {
+  return Object.fromEntries(
+    Object.entries(fieldErrors).map(([field, messages]) => [
+      field,
+      messages?.map((m) => validation[m as keyof ValidationDict] ?? m),
+    ]),
+  ) as T;
+}
 
 export async function signupAction(
   _prev: AuthFormState,
   formData: FormData,
 ): Promise<AuthFormState> {
+  const values = { email: text(formData, "email"), name: text(formData, "name") };
+
   const parsed = SignupSchema.safeParse({
     email: formData.get("email"),
     name: formData.get("name"),
@@ -46,7 +74,11 @@ export async function signupAction(
   });
 
   if (!parsed.success) {
-    return { errors: parsed.error.flatten().fieldErrors };
+    const dict = await getDictionary();
+    return {
+      errors: localize(parsed.error.flatten().fieldErrors, dict.auth.validation),
+      values,
+    };
   }
 
   const { email, name, password } = parsed.data;
@@ -55,7 +87,7 @@ export async function signupAction(
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
-    return { errors: { email: [dict.auth.emailTaken] } };
+    return { errors: { email: [dict.auth.emailTaken] }, values };
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -69,7 +101,7 @@ export async function signupAction(
     });
   } catch (error) {
     if (error instanceof AuthError) {
-      return { errors: { _form: [dict.auth.couldNotSignIn] } };
+      return { errors: { _form: [dict.auth.couldNotSignIn] }, values };
     }
     throw error;
   }
@@ -80,13 +112,19 @@ export async function loginAction(
   _prev: AuthFormState,
   formData: FormData,
 ): Promise<AuthFormState> {
+  const values = { email: text(formData, "email") };
+
   const parsed = LoginSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
   });
 
   if (!parsed.success) {
-    return { errors: parsed.error.flatten().fieldErrors };
+    const dict = await getDictionary();
+    return {
+      errors: localize(parsed.error.flatten().fieldErrors, dict.auth.validation),
+      values,
+    };
   }
 
   try {
@@ -98,7 +136,7 @@ export async function loginAction(
   } catch (error) {
     if (error instanceof AuthError) {
       const dict = await getDictionary();
-      return { errors: { _form: [dict.auth.invalidCreds] } };
+      return { errors: { _form: [dict.auth.invalidCreds] }, values };
     }
     throw error;
   }
@@ -114,7 +152,11 @@ export async function signInWithGoogleAction() {
 }
 
 export type ForgotPasswordState =
-  | { errors?: { email?: string[] }; sent?: boolean }
+  | {
+      errors?: { email?: string[] };
+      sent?: boolean;
+      values?: { email?: string };
+    }
   | undefined;
 
 export async function requestPasswordResetAction(
@@ -125,7 +167,11 @@ export async function requestPasswordResetAction(
     email: formData.get("email"),
   });
   if (!parsed.success) {
-    return { errors: parsed.error.flatten().fieldErrors };
+    const dict = await getDictionary();
+    return {
+      errors: localize(parsed.error.flatten().fieldErrors, dict.auth.validation),
+      values: { email: text(formData, "email") },
+    };
   }
 
   const dict = await getDictionary();
@@ -189,7 +235,10 @@ export async function resetPasswordAction(
     passwordConfirm: formData.get("passwordConfirm"),
   });
   if (!parsed.success) {
-    return { errors: parsed.error.flatten().fieldErrors };
+    const dict = await getDictionary();
+    return {
+      errors: localize(parsed.error.flatten().fieldErrors, dict.auth.validation),
+    };
   }
 
   const dict = await getDictionary();

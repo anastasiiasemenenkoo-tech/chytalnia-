@@ -74,7 +74,6 @@ export const uk = {
     password: "Пароль",
     passwordConfirm: "Повтори пароль",
     passwordHint: "Не менше 8 символів.",
-    passwordMismatch: "Паролі не збігаються.",
     showPassword: "Показати пароль",
     hidePassword: "Сховати пароль",
     submitSignup: "Створити акаунт",
@@ -111,6 +110,16 @@ export const uk = {
     resetEmailIgnore: "Якщо це були не ти — просто ігноруй цей лист.",
     continueWithGoogle: "Продовжити з Google",
     orContinueWith: "або",
+    validation: {
+      invalidEmail: "За такою адресою лист не дійде. Перечитаєш?",
+      nameRequired: "А як до тебе звертатися? Без імені не пустимо.",
+      nameLettersOnly: "Тільки літери, будь ласка — цифри лишимо для номерів сторінок.",
+      passwordTooShort:
+        "Це радше анотація, ніж пароль. Треба хоча б 8 символів.",
+      passwordRequired: "Порожня сторінка — гарно, але тут потрібен пароль.",
+      passwordConfirmRequired: "Ще раз пароль — для певності.",
+      passwordsDontMatch: "Паролі розійшлися в сюжеті. Звірмо ще раз?",
+    },
   },
   dashboard: {
     title: "Огляд",
