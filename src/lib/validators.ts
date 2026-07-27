@@ -86,6 +86,15 @@ export const ClubIdSchema = z.object({
   clubId: z.string().trim().min(1),
 });
 
+export const ChallengeToDuelSchema = z.object({
+  clubId: z.string().trim().min(1),
+  opponentId: z.string().trim().min(1),
+});
+
+export const DuelIdSchema = z.object({
+  duelId: z.string().trim().min(1),
+});
+
 export const SetClubBookSchema = z.object({
   clubId: z.string().trim().min(1),
   bookId: z.string().trim().min(1),

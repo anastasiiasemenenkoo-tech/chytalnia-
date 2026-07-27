@@ -19,6 +19,14 @@ enum ClubRole {
   MEMBER
 }
 
+enum DuelStatus {
+  PENDING
+  ACTIVE
+  FINISHED
+  DECLINED
+  CANCELLED
+}
+
 model User {
   id             String   @id @default(cuid())
   email          String   @unique
@@ -33,6 +41,10 @@ model User {
   ownedClubs   BookClub[]       @relation("ClubOwner")
   clubComments ClubComment[]
   resetTokens  PasswordResetToken[]
+
+  duelsChallenged ReadingDuel[] @relation("DuelChallenger")
+  duelsReceived   ReadingDuel[] @relation("DuelOpponent")
+  duelsWon        ReadingDuel[] @relation("DuelWinner")
 }
 
 model PasswordResetToken {
@@ -59,6 +71,7 @@ model Book {
   userBooks   UserBook[]
   clubs       BookClub[]           @relation("CurrentBook")
   clubHistory ClubReadingHistory[]
+  duels       ReadingDuel[]
 }
 
 model UserBook {
@@ -98,6 +111,7 @@ model BookClub {
   memberships          ClubMembership[]
   comments             ClubComment[]
   readingHistory       ClubReadingHistory[]
+  duels                ReadingDuel[]
 }
 
 model ClubMembership {
@@ -126,6 +140,31 @@ model ClubReadingHistory {
   book Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
 
   @@index([clubId, endedAt])
+}
+
+/// A head-to-head race between two readers on one book: whoever shelves it
+/// as READ first wins. Scoped to the club the challenge was thrown in.
+model ReadingDuel {
+  id           String     @id @default(cuid())
+  clubId       String
+  bookId       String
+  challengerId String
+  opponentId   String
+  status       DuelStatus @default(PENDING)
+  createdAt    DateTime   @default(now())
+  respondedAt  DateTime?
+  winnerId     String?
+  wonAt        DateTime?
+
+  club       BookClub @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  book       Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  challenger User     @relation("DuelChallenger", fields: [challengerId], references: [id], onDelete: Cascade)
+  opponent   User     @relation("DuelOpponent", fields: [opponentId], references: [id], onDelete: Cascade)
+  winner     User?    @relation("DuelWinner", fields: [winnerId], references: [id])
+
+  @@index([challengerId, status])
+  @@index([opponentId, status])
+  @@index([bookId, status])
 }
 
 model ClubComment {

@@ -1,4 +1,5 @@
 import { ReadingProgressBar } from "@/components/books/reading-progress-bar";
+import { ChallengeButton } from "@/components/duels/challenge-button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -21,6 +22,9 @@ export async function ClubMembers({
   memberships,
   progressByUserId,
   hasCurrentBook,
+  clubId,
+  currentUserId,
+  canChallenge,
 }: {
   memberships: Array<{
     id: string;
@@ -30,6 +34,9 @@ export async function ClubMembers({
   }>;
   progressByUserId: Map<string, { pagesRead: number | null; totalPages: number | null }>;
   hasCurrentBook: boolean;
+  clubId: string;
+  currentUserId: string;
+  canChallenge: boolean;
 }) {
   const dict = await getDictionary();
 
@@ -60,9 +67,17 @@ export async function ClubMembers({
                       </p>
                     </div>
                   </div>
-                  {m.role === "OWNER" && (
-                    <Badge variant="secondary">{dict.clubs.owner}</Badge>
-                  )}
+                  <div className="flex shrink-0 items-center gap-2">
+                    {m.role === "OWNER" && (
+                      <Badge variant="secondary">{dict.clubs.owner}</Badge>
+                    )}
+                    {canChallenge && m.userId !== currentUserId && (
+                      <ChallengeButton
+                        clubId={clubId}
+                        opponentId={m.userId}
+                      />
+                    )}
+                  </div>
                 </div>
                 {hasCurrentBook &&
                   (progress?.pagesRead != null && progress.totalPages ? (

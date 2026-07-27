@@ -8,19 +8,25 @@ import {
   Library,
   type LucideIcon,
   Search,
+  Swords,
   Users,
 } from "lucide-react";
 
 import { useDict } from "@/i18n/provider";
 import { cn } from "@/lib/utils";
 
-type NavItem = { href: string; labelKey: "overview" | "myBooks" | "findBooks" | "clubs"; icon: LucideIcon };
+type NavItem = {
+  href: string;
+  labelKey: "overview" | "myBooks" | "findBooks" | "clubs" | "duels";
+  icon: LucideIcon;
+};
 
 export const NAV: NavItem[] = [
   { href: "/dashboard", labelKey: "overview", icon: LayoutDashboard },
   { href: "/books", labelKey: "myBooks", icon: Library },
   { href: "/books/search", labelKey: "findBooks", icon: Search },
   { href: "/clubs", labelKey: "clubs", icon: Users },
+  { href: "/duels", labelKey: "duels", icon: Swords },
 ];
 
 export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {

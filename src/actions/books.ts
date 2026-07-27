@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { randomUUID } from "node:crypto";
 
+import { settleDuelsForFinishedBook } from "@/actions/duels";
 import { getDictionary } from "@/i18n";
 import { prisma } from "@/lib/db";
 import { requireCurrentUser } from "@/lib/session";
@@ -27,7 +28,7 @@ async function upsertUserBook(args: {
   shelf: ShelfValue;
 }) {
   const finishedAt = args.shelf === "READ" ? new Date() : null;
-  return prisma.userBook.upsert({
+  const userBook = await prisma.userBook.upsert({
     where: { userId_bookId: { userId: args.userId, bookId: args.bookId } },
     update: { shelf: args.shelf, finishedAt },
     create: {
@@ -37,6 +38,10 @@ async function upsertUserBook(args: {
       finishedAt,
     },
   });
+  if (args.shelf === "READ") {
+    await settleDuelsForFinishedBook(args.userId, args.bookId);
+  }
+  return userBook;
 }
 
 export async function addBookToShelf(formData: FormData): Promise<ActionResult> {
@@ -105,7 +110,7 @@ export async function moveBookToShelf(formData: FormData): Promise<ActionResult>
 
   const existing = await prisma.userBook.findUnique({
     where: { id: parsed.data.userBookId },
-    select: { userId: true },
+    select: { userId: true, bookId: true },
   });
   if (!existing || existing.userId !== user.id) {
     { const dict = await getDictionary(); return { ok: false, error: dict.books.notFound }; }
@@ -116,6 +121,10 @@ export async function moveBookToShelf(formData: FormData): Promise<ActionResult>
     where: { id: parsed.data.userBookId },
     data: { shelf: parsed.data.shelf, finishedAt },
   });
+
+  if (parsed.data.shelf === "READ") {
+    await settleDuelsForFinishedBook(user.id, existing.bookId);
+  }
 
   revalidatePath("/books");
   revalidatePath("/dashboard");
@@ -167,7 +176,7 @@ export async function updateReadingProgress(
 
   const existing = await prisma.userBook.findUnique({
     where: { id: parsed.data.userBookId },
-    select: { userId: true, shelf: true },
+    select: { userId: true, shelf: true, bookId: true },
   });
   if (!existing || existing.userId !== user.id) {
     { const dict = await getDictionary(); return { ok: false, error: dict.books.notFound }; }
@@ -187,6 +196,10 @@ export async function updateReadingProgress(
         : {}),
     },
   });
+
+  if (finished && existing.shelf !== "READ") {
+    await settleDuelsForFinishedBook(user.id, existing.bookId);
+  }
 
   revalidatePath("/books");
   revalidatePath("/dashboard");

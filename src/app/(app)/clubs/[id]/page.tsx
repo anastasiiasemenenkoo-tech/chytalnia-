@@ -207,6 +207,9 @@ export default async function ClubDetailPage({
           memberships={club.memberships}
           progressByUserId={progressByUserId}
           hasCurrentBook={!!club.currentlyReadingBook}
+          clubId={club.id}
+          currentUserId={user.id}
+          canChallenge={isMember && !!club.currentlyReadingBook}
         />
       </section>
 
