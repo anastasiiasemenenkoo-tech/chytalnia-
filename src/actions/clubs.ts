@@ -10,9 +10,12 @@ import { requireCurrentUser } from "@/lib/session";
 import { upsertUserBook } from "@/lib/user-books";
 import {
   AddClubBookSchema,
+  AddClubMemberSchema,
   ClubIdSchema,
+  ClubMemberSchema,
   ClubScheduleSchema,
   CreateClubSchema,
+  EditClubSchema,
   SetClubBookSchema,
 } from "@/lib/validators";
 import type { ActionResult } from "@/actions/books";
@@ -184,6 +187,122 @@ export async function addBookForClub(
   revalidatePath(`/clubs/${parsed.data.clubId}`);
   revalidatePath("/books");
   revalidatePath("/dashboard");
+  return { ok: true };
+}
+
+/** Ownership gate shared by every owner-only club action below. */
+async function requireClubOwner(clubId: string, userId: string) {
+  const club = await prisma.bookClub.findUnique({
+    where: { id: clubId },
+    select: { ownerId: true },
+  });
+  return !!club && club.ownerId === userId;
+}
+
+export async function editClub(formData: FormData): Promise<ActionResult> {
+  const user = await requireCurrentUser();
+  const dict = await getDictionary();
+  const parsed = EditClubSchema.safeParse({
+    clubId: formData.get("clubId"),
+    name: formData.get("name"),
+    description: formData.get("description") ?? "",
+  });
+  if (!parsed.success) return { ok: false, error: dict.clubs.editInvalid };
+
+  if (!(await requireClubOwner(parsed.data.clubId, user.id))) {
+    return { ok: false, error: dict.clubs.ownerOnly };
+  }
+
+  await prisma.bookClub.update({
+    where: { id: parsed.data.clubId },
+    data: {
+      name: parsed.data.name,
+      description: parsed.data.description || null,
+    },
+  });
+
+  revalidatePath("/clubs");
+  revalidatePath(`/clubs/${parsed.data.clubId}`);
+  return { ok: true };
+}
+
+export async function removeClubMember(
+  formData: FormData,
+): Promise<ActionResult> {
+  const user = await requireCurrentUser();
+  const dict = await getDictionary();
+  const parsed = ClubMemberSchema.safeParse({
+    clubId: formData.get("clubId"),
+    userId: formData.get("userId"),
+  });
+  if (!parsed.success) return { ok: false, error: dict.clubs.invalid };
+
+  if (!(await requireClubOwner(parsed.data.clubId, user.id))) {
+    return { ok: false, error: dict.clubs.ownerOnly };
+  }
+  // Removing yourself would leave the club with nobody who can run it, and
+  // `leaveClub` already refuses the same thing for the same reason.
+  if (parsed.data.userId === user.id) {
+    return { ok: false, error: dict.clubs.ownerCannotLeave };
+  }
+
+  const membership = await prisma.clubMembership.findUnique({
+    where: {
+      userId_clubId: {
+        userId: parsed.data.userId,
+        clubId: parsed.data.clubId,
+      },
+    },
+    select: { id: true },
+  });
+  if (!membership) return { ok: false, error: dict.clubs.notMember };
+
+  await prisma.clubMembership.delete({ where: { id: membership.id } });
+
+  revalidatePath("/clubs");
+  revalidatePath(`/clubs/${parsed.data.clubId}`);
+  return { ok: true };
+}
+
+export async function addClubMember(
+  formData: FormData,
+): Promise<ActionResult> {
+  const user = await requireCurrentUser();
+  const dict = await getDictionary();
+  const parsed = AddClubMemberSchema.safeParse({
+    clubId: formData.get("clubId"),
+    email: formData.get("email"),
+  });
+  if (!parsed.success) return { ok: false, error: dict.clubs.addMemberBadEmail };
+
+  if (!(await requireClubOwner(parsed.data.clubId, user.id))) {
+    return { ok: false, error: dict.clubs.ownerOnly };
+  }
+
+  const invitee = await prisma.user.findUnique({
+    where: { email: parsed.data.email },
+    select: { id: true },
+  });
+  if (!invitee) return { ok: false, error: dict.clubs.addMemberNoSuchReader };
+
+  const existing = await prisma.clubMembership.findUnique({
+    where: {
+      userId_clubId: { userId: invitee.id, clubId: parsed.data.clubId },
+    },
+    select: { id: true },
+  });
+  if (existing) return { ok: false, error: dict.clubs.addMemberAlready };
+
+  await prisma.clubMembership.create({
+    data: {
+      userId: invitee.id,
+      clubId: parsed.data.clubId,
+      role: "MEMBER",
+    },
+  });
+
+  revalidatePath("/clubs");
+  revalidatePath(`/clubs/${parsed.data.clubId}`);
   return { ok: true };
 }
 

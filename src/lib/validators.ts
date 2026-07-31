@@ -107,6 +107,21 @@ export const AddClubBookSchema = z.object({
   author: z.string().trim().min(1).max(300),
 });
 
+/** Same shape as creating one — the edit form offers the same two fields. */
+export const EditClubSchema = CreateClubSchema.extend({
+  clubId: z.string().trim().min(1),
+});
+
+export const ClubMemberSchema = z.object({
+  clubId: z.string().trim().min(1),
+  userId: z.string().trim().min(1),
+});
+
+export const AddClubMemberSchema = z.object({
+  clubId: z.string().trim().min(1),
+  email: z.string().trim().toLowerCase().email(),
+});
+
 export const UpdateProgressSchema = z
   .object({
     userBookId: z.string().trim().min(1),

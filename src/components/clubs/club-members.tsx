@@ -1,4 +1,6 @@
 import { ReadingProgressBar } from "@/components/books/reading-progress-bar";
+import { AddClubMemberDialog } from "@/components/clubs/add-club-member-dialog";
+import { RemoveMemberButton } from "@/components/clubs/remove-member-button";
 import { ChallengeButton } from "@/components/duels/challenge-button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +27,7 @@ export async function ClubMembers({
   clubId,
   currentUserId,
   canChallenge,
+  isOwner,
 }: {
   memberships: Array<{
     id: string;
@@ -38,13 +41,15 @@ export async function ClubMembers({
   clubId: string;
   currentUserId: string;
   canChallenge: boolean;
+  isOwner: boolean;
 }) {
   const dict = await getDictionary();
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex flex-wrap items-center justify-between gap-2">
         <CardTitle>{dict.clubs.membersTitle}</CardTitle>
+        {isOwner && <AddClubMemberDialog clubId={clubId} />}
       </CardHeader>
       <CardContent>
         <ul className="space-y-4">
@@ -78,6 +83,13 @@ export async function ClubMembers({
                       <ChallengeButton
                         clubId={clubId}
                         opponentId={m.userId}
+                      />
+                    )}
+                    {isOwner && m.role !== "OWNER" && (
+                      <RemoveMemberButton
+                        clubId={clubId}
+                        userId={m.userId}
+                        name={m.user.name ?? dict.common.unnamedReader}
                       />
                     )}
                   </div>

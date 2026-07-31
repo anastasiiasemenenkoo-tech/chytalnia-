@@ -7,6 +7,7 @@ import { ReadingProgressBar } from "@/components/books/reading-progress-bar";
 import { ReadingProgressDialog } from "@/components/books/reading-progress-dialog";
 import { ClubDiscussion } from "@/components/clubs/club-discussion";
 import { ClubMembers } from "@/components/clubs/club-members";
+import { EditClubDialog } from "@/components/clubs/edit-club-dialog";
 import { ClubReadingHistory } from "@/components/clubs/club-reading-history";
 import { ClubReviews } from "@/components/clubs/club-reviews";
 import { ClubSchedule } from "@/components/clubs/club-schedule";
@@ -138,11 +139,20 @@ export default async function ClubDetailPage({
             {memberLine}
           </p>
         </div>
-        <JoinLeaveButton
-          clubId={club.id}
-          isMember={isMember}
-          isOwner={isOwner}
-        />
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
+          {isOwner && (
+            <EditClubDialog
+              clubId={club.id}
+              name={club.name}
+              description={club.description}
+            />
+          )}
+          <JoinLeaveButton
+            clubId={club.id}
+            isMember={isMember}
+            isOwner={isOwner}
+          />
+        </div>
       </header>
 
       <Separator />
@@ -221,6 +231,7 @@ export default async function ClubDetailPage({
           clubId={club.id}
           currentUserId={user.id}
           canChallenge={isMember && !!club.currentlyReadingBook}
+          isOwner={isOwner}
         />
       </section>
 
