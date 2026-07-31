@@ -52,8 +52,7 @@ export const en: Dictionary = {
     featureShelvesBody:
       "Track what you want to read, what you're reading, and what you've finished.",
     featureSearchTitle: "Your search",
-    featureSearchBody:
-      "Find any book by title or author. Covers come along for free.",
+    featureSearchBody: "Find any book by title or author.",
     featureClubsTitle: "Your clubs",
     featureClubsBody:
       "Join a club or start your own, then pick what everyone's reading.",
