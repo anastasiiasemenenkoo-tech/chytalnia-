@@ -100,6 +100,13 @@ export const SetClubBookSchema = z.object({
   bookId: z.string().trim().min(1),
 });
 
+/** Adding a book to your own shelf and to the club in one step. */
+export const AddClubBookSchema = z.object({
+  clubId: z.string().trim().min(1),
+  title: z.string().trim().min(1).max(300),
+  author: z.string().trim().min(1).max(300),
+});
+
 export const UpdateProgressSchema = z
   .object({
     userBookId: z.string().trim().min(1),

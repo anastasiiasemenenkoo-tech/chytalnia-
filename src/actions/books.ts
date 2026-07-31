@@ -7,6 +7,7 @@ import { settleDuelsForFinishedBook } from "@/actions/duels";
 import { getDictionary } from "@/i18n";
 import { prisma } from "@/lib/db";
 import { requireCurrentUser } from "@/lib/session";
+import { upsertUserBook } from "@/lib/user-books";
 import {
   AddBookSchema,
   ClearRatingSchema,
@@ -17,32 +18,9 @@ import {
   RemoveBookSchema,
   ReviewSchema,
   UpdateProgressSchema,
-  type ShelfValue,
 } from "@/lib/validators";
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
-
-async function upsertUserBook(args: {
-  userId: string;
-  bookId: string;
-  shelf: ShelfValue;
-}) {
-  const finishedAt = args.shelf === "READ" ? new Date() : null;
-  const userBook = await prisma.userBook.upsert({
-    where: { userId_bookId: { userId: args.userId, bookId: args.bookId } },
-    update: { shelf: args.shelf, finishedAt },
-    create: {
-      userId: args.userId,
-      bookId: args.bookId,
-      shelf: args.shelf,
-      finishedAt,
-    },
-  });
-  if (args.shelf === "READ") {
-    await settleDuelsForFinishedBook(args.userId, args.bookId);
-  }
-  return userBook;
-}
 
 export async function addBookToShelf(formData: FormData): Promise<ActionResult> {
   const user = await requireCurrentUser();

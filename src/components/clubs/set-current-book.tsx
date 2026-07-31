@@ -4,6 +4,7 @@ import { useTransition } from "react";
 import { toast } from "sonner";
 
 import { setClubCurrentBook } from "@/actions/clubs";
+import { AddClubBookDialog } from "@/components/clubs/add-club-book-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -28,7 +29,10 @@ export function SetCurrentBook({
 
   if (options.length === 0) {
     return (
-      <p className="text-muted-foreground text-xs">{dict.clubs.setEmpty}</p>
+      <div className="space-y-2">
+        <p className="text-muted-foreground text-xs">{dict.clubs.setEmpty}</p>
+        <AddClubBookDialog clubId={clubId} variant="default" />
+      </div>
     );
   }
 
@@ -42,24 +46,29 @@ export function SetCurrentBook({
   }
 
   return (
-    <form action={onSubmit} className="flex items-end gap-2">
-      <div className="flex-1">
-        <Select name="bookId" defaultValue={currentBookId ?? undefined}>
-          <SelectTrigger>
-            <SelectValue placeholder={dict.clubs.setPlaceholder} />
-          </SelectTrigger>
-          <SelectContent>
-            {options.map((b) => (
-              <SelectItem key={b.id} value={b.id}>
-                {b.title} — {b.author}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <Button type="submit" disabled={pending}>
-        {pending ? dict.clubs.setSaving : dict.clubs.setSave}
-      </Button>
-    </form>
+    <div className="space-y-2">
+      <form action={onSubmit} className="flex flex-wrap items-end gap-2">
+        <div className="min-w-40 flex-1">
+          <Select name="bookId" defaultValue={currentBookId ?? undefined}>
+            <SelectTrigger>
+              <SelectValue placeholder={dict.clubs.setPlaceholder} />
+            </SelectTrigger>
+            <SelectContent>
+              {options.map((b) => (
+                <SelectItem key={b.id} value={b.id}>
+                  {b.title} — {b.author}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <Button type="submit" disabled={pending}>
+          {pending ? dict.clubs.setSaving : dict.clubs.setSave}
+        </Button>
+      </form>
+      {/* Also reachable when the shelves aren't empty: the club's next book
+          often isn't one you already own. */}
+      <AddClubBookDialog clubId={clubId} />
+    </div>
   );
 }

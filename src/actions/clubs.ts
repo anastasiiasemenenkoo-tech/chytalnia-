@@ -2,11 +2,14 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { randomUUID } from "node:crypto";
 
 import { getDictionary } from "@/i18n";
 import { prisma } from "@/lib/db";
 import { requireCurrentUser } from "@/lib/session";
+import { upsertUserBook } from "@/lib/user-books";
 import {
+  AddClubBookSchema,
   ClubIdSchema,
   ClubScheduleSchema,
   CreateClubSchema,
@@ -109,28 +112,78 @@ export async function setClubCurrentBook(
     { const dict = await getDictionary(); return { ok: false, error: dict.clubs.setOnlyOwner }; }
   }
 
+  await applyCurrentBook(parsed.data.clubId, parsed.data.bookId);
+
+  revalidatePath(`/clubs/${parsed.data.clubId}`);
+  return { ok: true };
+}
+
+/**
+ * Point the club at a book and keep its reading history honest: the previous
+ * read is closed off, and re-picking the same book is a no-op rather than a
+ * second history entry. Assumes the caller has already checked ownership.
+ */
+async function applyCurrentBook(clubId: string, bookId: string) {
   await prisma.$transaction(async (tx) => {
     const openHistory = await tx.clubReadingHistory.findFirst({
-      where: { clubId: parsed.data.clubId, endedAt: null },
+      where: { clubId, endedAt: null },
     });
-    if (openHistory && openHistory.bookId !== parsed.data.bookId) {
+    if (openHistory && openHistory.bookId !== bookId) {
       await tx.clubReadingHistory.update({
         where: { id: openHistory.id },
         data: { endedAt: new Date() },
       });
     }
-    if (!openHistory || openHistory.bookId !== parsed.data.bookId) {
-      await tx.clubReadingHistory.create({
-        data: { clubId: parsed.data.clubId, bookId: parsed.data.bookId },
-      });
+    if (!openHistory || openHistory.bookId !== bookId) {
+      await tx.clubReadingHistory.create({ data: { clubId, bookId } });
     }
     await tx.bookClub.update({
-      where: { id: parsed.data.clubId },
-      data: { currentlyReadingBookId: parsed.data.bookId },
+      where: { id: clubId },
+      data: { currentlyReadingBookId: bookId },
     });
   });
+}
+
+/**
+ * Add a book the owner does not have yet and hand it to the club in one go,
+ * so picking the club's next read doesn't start with a trip to your shelves.
+ */
+export async function addBookForClub(
+  formData: FormData,
+): Promise<ActionResult> {
+  const user = await requireCurrentUser();
+  const dict = await getDictionary();
+  const parsed = AddClubBookSchema.safeParse({
+    clubId: formData.get("clubId"),
+    title: formData.get("title"),
+    author: formData.get("author"),
+  });
+  if (!parsed.success) return { ok: false, error: dict.books.invalidData };
+
+  const club = await prisma.bookClub.findUnique({
+    where: { id: parsed.data.clubId },
+    select: { ownerId: true },
+  });
+  if (!club || club.ownerId !== user.id) {
+    return { ok: false, error: dict.clubs.setOnlyOwner };
+  }
+
+  const book = await prisma.book.create({
+    data: {
+      olid: `manual:${randomUUID()}`,
+      title: parsed.data.title,
+      author: parsed.data.author,
+    },
+  });
+
+  // The club is about to read it, so READING is the shelf that matches
+  // reality — the owner shouldn't have to move it there afterwards.
+  await upsertUserBook({ userId: user.id, bookId: book.id, shelf: "READING" });
+  await applyCurrentBook(parsed.data.clubId, book.id);
 
   revalidatePath(`/clubs/${parsed.data.clubId}`);
+  revalidatePath("/books");
+  revalidatePath("/dashboard");
   return { ok: true };
 }
 

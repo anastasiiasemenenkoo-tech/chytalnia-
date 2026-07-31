@@ -273,8 +273,14 @@ export const en: Dictionary = {
     noCurrentBook: "No book picked yet — the club is keeping us guessing.",
     addBookHint: "Shelve this book and your progress starts counting.",
     membersTitle: "Members",
-    setEmpty:
-      "Add some books to your shelves first, then pick one for the club here.",
+    setEmpty: "Your shelves are empty — add a book right here.",
+    addBookAction: "Add a book",
+    addBookTitle: "A new book for the club",
+    addBookSubtitle:
+      "It goes on your “Reading now” shelf and straight to the club.",
+    addBookSubmit: "Add and pick",
+    addBookSaving: "Adding…",
+    addBookAdded: "Book added and picked for the club.",
     setPlaceholder: "Choose a book",
     setSave: "Save",
     setSaving: "Saving…",
