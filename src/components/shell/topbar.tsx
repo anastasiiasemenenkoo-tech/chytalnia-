@@ -26,15 +26,17 @@ export async function Topbar({
 
   return (
     <header className="bg-background flex h-14 items-center justify-between gap-3 border-b px-4 md:px-6">
-      <div className="flex items-center gap-2">
+      {/* min-w-0 + truncate: without them a long name pushes the controls off
+          a phone-width screen and wraps the greeting past the header's h-14. */}
+      <div className="flex min-w-0 items-center gap-2">
         <MobileNav />
-        <div className="text-muted-foreground text-sm">
+        <div className="text-muted-foreground truncate text-sm">
           {user.name
             ? interpolate(dict.topbar.welcomeBack, { name: user.name })
             : dict.topbar.welcomeBackNoName}
         </div>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex shrink-0 items-center gap-2">
         <LanguageToggle locale={locale} />
         <ThemeToggle />
         <Avatar className="h-8 w-8">
@@ -49,8 +51,11 @@ export async function Topbar({
             size="sm"
             className="text-muted-foreground"
           >
-            <LogOut className="mr-2 h-4 w-4" />
-            {dict.topbar.signOut}
+            <LogOut className="h-4 w-4 sm:mr-2" />
+            {/* On a phone the word alone costs more width than the whole row
+                has to spare, so the icon carries it and the label stays for
+                screen readers. */}
+            <span className="sr-only sm:not-sr-only">{dict.topbar.signOut}</span>
           </Button>
         </form>
       </div>

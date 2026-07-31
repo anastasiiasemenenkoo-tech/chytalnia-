@@ -116,7 +116,7 @@ export const en: Dictionary = {
     },
   },
   dashboard: {
-    title: "Overview",
+    title: "My reading room",
     subtitle: "A snapshot of your reading life.",
     bookClubsCard: "Book clubs",
     browse: "Browse",
@@ -140,7 +140,7 @@ export const en: Dictionary = {
       many: "{count} books",
       other: "{count} books",
     },
-    shelfEmpty: "Empty shelf",
+    shelfEmpty: "This shelf is waiting for its first book.",
     scrollLeft: "Scroll left",
     scrollRight: "Scroll right",
     openShelf: "Open shelf",

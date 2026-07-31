@@ -41,13 +41,4 @@ export function useLocale(): "uk" | "en" {
   return ctx.locale;
 }
 
-/** Convenience: read a template and interpolate vars in one call. */
-export function useT() {
-  const dict = useDict();
-  return (
-    template: string,
-    vars?: Record<string, string | number>,
-  ): string => interpolate(template, vars);
-}
-
 export { interpolate };

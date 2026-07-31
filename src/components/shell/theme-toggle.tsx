@@ -2,42 +2,31 @@
 
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { useDict } from "@/i18n/provider";
 
 export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
   const dict = useDict();
-
-  useEffect(() => setMounted(true), []);
-
-  const isDark = mounted && resolvedTheme === "dark";
 
   return (
     <Button
       variant="ghost"
       size="icon"
-      onClick={() => setTheme(isDark ? "light" : "dark")}
-      aria-label={isDark ? dict.topbar.lightMode : dict.topbar.darkMode}
+      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
     >
-      {/* Render both icons to avoid layout shift; hide via opacity once mounted. */}
-      <Sun
-        className={
-          mounted && !isDark
-            ? "h-4 w-4"
-            : "absolute h-4 w-4 scale-0 opacity-0"
-        }
-      />
-      <Moon
-        className={
-          mounted && isDark
-            ? "h-4 w-4"
-            : "absolute h-4 w-4 scale-0 opacity-0"
-        }
-      />
+      {/* Which theme is active is only known in the browser, so the server
+          would have to render a placeholder and swap it in after mount. The
+          `.dark` class is already on <html> before first paint, so let CSS
+          pick the icon — and the label with it, since aria-label cannot be
+          switched by a stylesheet. */}
+      <Sun className="h-4 w-4 dark:hidden" />
+      <Moon className="hidden h-4 w-4 dark:block" />
+      <span className="sr-only dark:hidden">{dict.topbar.darkMode}</span>
+      <span className="sr-only hidden dark:inline">
+        {dict.topbar.lightMode}
+      </span>
     </Button>
   );
 }

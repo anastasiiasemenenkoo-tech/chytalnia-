@@ -31,7 +31,9 @@ export const uk = {
     ABANDONED: "Недочитано",
   },
   nav: {
-    overview: "Моя Читальня",
+    // Not "Моя Читальня" — the sidebar brand right above already says
+    // "Читальня", and the two together read as a stutter.
+    overview: "Огляд",
     myBooks: "Мої книги",
     findBooks: "Знайти книги",
     clubs: "Книжкові клуби",
@@ -149,7 +151,7 @@ export const uk = {
       many: "{count} книг",
       other: "{count} книг",
     },
-    shelfEmpty: "Порожня полиця",
+    shelfEmpty: "Полиця чекає на першу книжку.",
     scrollLeft: "Прокрутити ліворуч",
     scrollRight: "Прокрутити праворуч",
     openShelf: "Відкрити полицю",

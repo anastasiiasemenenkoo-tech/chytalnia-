@@ -29,6 +29,13 @@ export type ShelfBook = {
 const LYING_THRESHOLD = 6;
 const LYING_COUNT = 2;
 
+/**
+ * An empty row still has to reserve height, but reserving a spine's worth of
+ * it leaves a hole the size of a book you don't own. Tall enough for the
+ * plant that keeps the shelf from looking abandoned, and no taller.
+ */
+const EMPTY_SHELF_HEIGHT = 96;
+
 export function BookShelfRow({
   shelf,
   label,
@@ -121,12 +128,19 @@ export function BookShelfRow({
             // scrollbar would only cut across it.
             "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
           )}
-          style={{ minHeight: SPINE_MAX_HEIGHT + 8 }}
+          style={{
+            minHeight:
+              books.length === 0 ? EMPTY_SHELF_HEIGHT : SPINE_MAX_HEIGHT + 8,
+          }}
         >
           {books.length === 0 ? (
-            <p className="text-muted-foreground self-end pb-2 text-sm">
-              {dict.books.shelfEmpty}
-            </p>
+            <>
+              <p className="text-muted-foreground mr-4 self-end pb-2 text-sm">
+                {dict.books.shelfEmpty}
+              </p>
+              {decor === "plant" && <ShelfPlant />}
+              {decor === "stack" && <ShelfBookStack />}
+            </>
           ) : (
             <>
               {standing.map((book) => (
