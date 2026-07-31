@@ -112,7 +112,8 @@ export const en: Dictionary = {
         "That's more of a blurb than a password. At least 8 characters, please.",
       passwordRequired: "A blank page is lovely, but we need a password here.",
       passwordConfirmRequired: "One more time, just to be sure.",
-      passwordsDontMatch: "These two differ, like two editions of one book.",
+      passwordsDontMatch:
+        "These two differ, like two editions of one book. Type the same password in both fields.",
     },
   },
   dashboard: {
