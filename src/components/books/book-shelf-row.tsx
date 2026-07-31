@@ -4,7 +4,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import { BookCover } from "@/components/books/book-cover";
+import {
+  BookSpine,
+  SPINE_MAX_HEIGHT,
+  spineColour,
+} from "@/components/books/book-spine";
+import { ShelfBookStack, ShelfPlant } from "@/components/books/shelf-decor";
 import { useDict, useLocale } from "@/i18n/provider";
 import { plural } from "@/i18n/plural";
 import { cn } from "@/lib/utils";
@@ -17,14 +22,23 @@ export type ShelfBook = {
   coverUrl: string | null;
 };
 
+/**
+ * Below this a row is too sparse for the trick to read as anything but a
+ * mistake, so every book stays standing.
+ */
+const LYING_THRESHOLD = 6;
+const LYING_COUNT = 2;
+
 export function BookShelfRow({
   shelf,
   label,
   books,
+  decor,
 }: {
   shelf: ShelfValue;
   label: string;
   books: ShelfBook[];
+  decor: "plant" | "stack" | "none";
 }) {
   const dict = useDict();
   const locale = useLocale();
@@ -56,6 +70,12 @@ export function BookShelfRow({
     el.scrollBy({ left: direction * el.clientWidth * 0.8, behavior: "smooth" });
   }
 
+  const lying =
+    books.length >= LYING_THRESHOLD ? books.slice(-LYING_COUNT) : [];
+  const standing = books.length >= LYING_THRESHOLD
+    ? books.slice(0, -LYING_COUNT)
+    : books;
+
   return (
     <section className="space-y-2">
       <header className="flex items-baseline justify-between gap-3">
@@ -72,7 +92,7 @@ export function BookShelfRow({
             onClick={() => scrollBy(-1)}
             disabled={!canScrollLeft}
             aria-label={dict.books.scrollLeft}
-            className="text-muted-foreground hover:text-foreground disabled:pointer-events-none disabled:opacity-30 transition-colors"
+            className="text-muted-foreground hover:text-foreground transition-colors disabled:pointer-events-none disabled:opacity-30"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
@@ -81,7 +101,7 @@ export function BookShelfRow({
             onClick={() => scrollBy(1)}
             disabled={!canScrollRight}
             aria-label={dict.books.scrollRight}
-            className="text-muted-foreground hover:text-foreground disabled:pointer-events-none disabled:opacity-30 transition-colors"
+            className="text-muted-foreground hover:text-foreground transition-colors disabled:pointer-events-none disabled:opacity-30"
           >
             <ChevronRight className="h-4 w-4" />
           </button>
@@ -93,31 +113,41 @@ export function BookShelfRow({
           ref={scroller}
           onScroll={syncArrows}
           className={cn(
-            "relative flex items-end gap-4 overflow-x-auto scroll-smooth px-2 pt-2",
+            // gap-px, not a real gap: books on a shelf touch each other.
+            // px-8 is what keeps a hovered cover from being clipped when the
+            // book it belongs to sits at either end of the row.
+            "flex items-end gap-px overflow-x-auto scroll-smooth px-8 pt-2",
             // The plank is the visual edge of this row, so the native
             // scrollbar would only cut across it.
             "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
           )}
+          style={{ minHeight: SPINE_MAX_HEIGHT + 8 }}
         >
           {books.length === 0 ? (
-            <p className="text-muted-foreground flex h-[168px] items-end pb-2 text-sm">
+            <p className="text-muted-foreground self-end pb-2 text-sm">
               {dict.books.shelfEmpty}
             </p>
           ) : (
-            books.map((book) => (
-              <Link
-                key={book.id}
-                href={`/books?shelf=${shelf}`}
-                title={`${book.title} — ${book.author}`}
-                className="group w-28 shrink-0"
-              >
-                <BookCover
-                  src={book.coverUrl}
-                  alt={book.title}
-                  className="shadow-md transition-transform duration-200 group-hover:-translate-y-1"
+            <>
+              {standing.map((book) => (
+                <BookSpine
+                  key={book.id}
+                  title={book.title}
+                  author={book.author}
+                  coverUrl={book.coverUrl}
+                  shelf={shelf}
                 />
-              </Link>
-            ))
+              ))}
+              {lying.length > 0 && (
+                <span className="ml-3 flex shrink-0 flex-col justify-end gap-1 self-end">
+                  {lying.map((book) => (
+                    <LyingBook key={book.id} book={book} shelf={shelf} />
+                  ))}
+                </span>
+              )}
+              {decor === "plant" && <ShelfPlant />}
+              {decor === "stack" && <ShelfBookStack />}
+            </>
           )}
         </div>
 
@@ -146,5 +176,27 @@ export function BookShelfRow({
         </div>
       </div>
     </section>
+  );
+}
+
+/** A book resting on its side at the end of a full row. */
+function LyingBook({
+  book,
+  shelf,
+}: {
+  book: ShelfBook;
+  shelf: ShelfValue;
+}) {
+  const colour = spineColour(book.title);
+
+  return (
+    <Link
+      href={`/books?shelf=${shelf}`}
+      title={`${book.title} — ${book.author}`}
+      className="block w-24 rounded-[3px] px-2 py-1 text-[10px] leading-tight font-medium transition-transform duration-200 hover:-translate-y-0.5 focus-visible:-translate-y-0.5"
+      style={{ backgroundColor: colour, color: "var(--spine-ink)" }}
+    >
+      <span className="block truncate">{book.title}</span>
+    </Link>
   );
 }

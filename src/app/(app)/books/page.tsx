@@ -126,11 +126,14 @@ export default async function BooksPage({
         </Card>
       ) : !activeShelf ? (
         <div className="space-y-8">
-          {SHELF_ORDER.map((shelf) => (
+          {SHELF_ORDER.map((shelf, i) => (
             <BookShelfRow
               key={shelf}
               shelf={shelf}
               label={dict.shelves[shelf]}
+              // Alternating props keep four identical rows from reading as a
+              // spreadsheet without turning the page into a still life.
+              decor={i % 2 === 0 ? "plant" : "stack"}
               books={userBooks
                 .filter((ub) => ub.shelf === shelf)
                 .map((ub) => ({

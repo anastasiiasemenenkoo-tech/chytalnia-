@@ -49,86 +49,131 @@
 }
 
 :root {
-  --background: oklch(0.96 0.014 80);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(0.985 0.008 80);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(0.985 0.008 80);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.955 0.012 80);
-  --muted-foreground: oklch(0.53 0.018 70);
-  --accent: oklch(0.95 0.016 80);
-  --accent-foreground: oklch(0.205 0 0);
+  /* Cool lavender paper. The whole illustration depends on this reading
+     colder than the shelves, so every neutral here carries hue ~275. */
+  --background: oklch(0.94 0.022 275);
+  --foreground: oklch(0.23 0.025 280);
+  --card: oklch(0.975 0.012 275);
+  --card-foreground: oklch(0.23 0.025 280);
+  --popover: oklch(0.975 0.012 275);
+  --popover-foreground: oklch(0.23 0.025 280);
+  --primary: oklch(0.28 0.04 280);
+  --primary-foreground: oklch(0.98 0.008 275);
+  --secondary: oklch(0.955 0.016 275);
+  --secondary-foreground: oklch(0.28 0.04 280);
+  --muted: oklch(0.93 0.02 275);
+  --muted-foreground: oklch(0.52 0.035 278);
+  --accent: oklch(0.92 0.028 275);
+  --accent-foreground: oklch(0.28 0.04 280);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.9 0.014 80);
-  --input: oklch(0.9 0.014 80);
-  --ring: oklch(0.68 0.03 70);
+  --border: oklch(0.88 0.024 275);
+  --input: oklch(0.88 0.024 275);
+  --ring: oklch(0.66 0.06 275);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --radius: 0.875rem;
-  --sidebar: oklch(0.975 0.012 80);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.95 0.014 80);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.9 0.014 80);
-  --sidebar-ring: oklch(0.708 0 0);
+  --radius: 1.125rem;
+  --sidebar: oklch(0.965 0.016 275);
+  --sidebar-foreground: oklch(0.23 0.025 280);
+  --sidebar-primary: oklch(0.28 0.04 280);
+  --sidebar-primary-foreground: oklch(0.98 0.008 275);
+  --sidebar-accent: oklch(0.92 0.028 275);
+  --sidebar-accent-foreground: oklch(0.28 0.04 280);
+  --sidebar-border: oklch(0.88 0.024 275);
+  --sidebar-ring: oklch(0.66 0.06 275);
 
-  /* The shelf plank on /books. Same warm hue family as the paper background,
-     just deeper — stained oak rather than a painted accent. */
-  --shelf-wood: oklch(0.74 0.045 70);
-  --shelf-wood-lit: oklch(0.82 0.04 75);
-  --shelf-wood-edge: oklch(0.63 0.05 62);
-  --shelf-contact: oklch(0.4 0.03 65 / 22%);
+  /* The shelf plank. Deliberately the one warm thing on a cool page — the
+     illustration reads as furniture only because of this contrast. */
+  --shelf-wood: oklch(0.62 0.08 52);
+  --shelf-wood-lit: oklch(0.7 0.075 58);
+  --shelf-wood-edge: oklch(0.5 0.075 45);
+  --shelf-contact: oklch(0.35 0.04 280 / 25%);
+
+  /* Book spines. Muted jewel tones, all dark enough to carry white text. */
+  --spine-1: oklch(0.48 0.12 25);
+  --spine-2: oklch(0.5 0.1 55);
+  --spine-3: oklch(0.5 0.09 95);
+  --spine-4: oklch(0.47 0.1 150);
+  --spine-5: oklch(0.5 0.08 195);
+  --spine-6: oklch(0.48 0.11 235);
+  --spine-7: oklch(0.45 0.12 275);
+  --spine-8: oklch(0.47 0.12 315);
+  --spine-9: oklch(0.5 0.11 350);
+  --spine-10: oklch(0.42 0.03 280);
+  --spine-ink: oklch(0.97 0.01 275);
+  --spine-band: oklch(1 0 0 / 30%);
+
+  /* Foliage for the shelf decorations. */
+  --leaf: oklch(0.55 0.1 145);
+  --leaf-deep: oklch(0.45 0.09 150);
+  --pot: oklch(0.62 0.11 45);
+  --bloom: oklch(0.68 0.11 265);
 }
 
 .dark {
-  --background: oklch(0.16 0.008 70);
-  --foreground: oklch(0.96 0.006 80);
-  --card: oklch(0.21 0.009 70);
-  --card-foreground: oklch(0.96 0.006 80);
-  --popover: oklch(0.21 0.009 70);
-  --popover-foreground: oklch(0.96 0.006 80);
-  --primary: oklch(0.92 0.008 80);
-  --primary-foreground: oklch(0.21 0.009 70);
-  --secondary: oklch(0.28 0.011 70);
-  --secondary-foreground: oklch(0.96 0.006 80);
-  --muted: oklch(0.28 0.011 70);
-  --muted-foreground: oklch(0.72 0.014 75);
-  --accent: oklch(0.28 0.011 70);
-  --accent-foreground: oklch(0.96 0.006 80);
+  /* Night version of the same lavender: deep blue-grey, never neutral black.
+     Below ~0.22 lightness the hue stops being legible and it just reads as
+     black, so these sit higher than a typical dark theme. */
+  --background: oklch(0.245 0.035 265);
+  --foreground: oklch(0.95 0.01 270);
+  --card: oklch(0.295 0.035 265);
+  --card-foreground: oklch(0.95 0.01 270);
+  --popover: oklch(0.295 0.035 265);
+  --popover-foreground: oklch(0.95 0.01 270);
+  --primary: oklch(0.92 0.015 270);
+  --primary-foreground: oklch(0.22 0.024 265);
+  --secondary: oklch(0.35 0.035 265);
+  --secondary-foreground: oklch(0.95 0.01 270);
+  --muted: oklch(0.35 0.035 265);
+  --muted-foreground: oklch(0.75 0.03 270);
+  --accent: oklch(0.37 0.04 265);
+  --accent-foreground: oklch(0.95 0.01 270);
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --ring: oklch(0.6 0.05 270);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.19 0.009 70);
-  --sidebar-foreground: oklch(0.96 0.006 80);
-  --sidebar-primary: oklch(0.92 0.008 80);
-  --sidebar-primary-foreground: oklch(0.21 0.009 70);
-  --sidebar-accent: oklch(0.28 0.011 70);
-  --sidebar-accent-foreground: oklch(0.96 0.006 80);
+  --sidebar: oklch(0.275 0.035 265);
+  --sidebar-foreground: oklch(0.95 0.01 270);
+  --sidebar-primary: oklch(0.92 0.015 270);
+  --sidebar-primary-foreground: oklch(0.275 0.035 265);
+  --sidebar-accent: oklch(0.37 0.04 265);
+  --sidebar-accent-foreground: oklch(0.95 0.01 270);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar-ring: oklch(0.6 0.05 270);
 
-  /* Walnut rather than oak: at the light theme's lightness the plank glows
-     against the dark background and outshines the covers. */
-  --shelf-wood: oklch(0.42 0.035 60);
-  --shelf-wood-lit: oklch(0.5 0.035 65);
-  --shelf-wood-edge: oklch(0.32 0.03 55);
+  /* Walnut rather than teak: at the light theme's lightness the plank glows
+     against the dark background and outshines the books. */
+  --shelf-wood: oklch(0.44 0.05 50);
+  --shelf-wood-lit: oklch(0.52 0.05 55);
+  --shelf-wood-edge: oklch(0.34 0.04 45);
   --shelf-contact: oklch(0 0 0 / 45%);
+
+  /* Spines lift a little so they don't sink into the dark page, but stay at
+     or below 0.54 lightness — above that the white title drops under 4.5:1. */
+  --spine-1: oklch(0.53 0.13 25);
+  --spine-2: oklch(0.54 0.11 55);
+  --spine-3: oklch(0.54 0.1 95);
+  --spine-4: oklch(0.52 0.11 150);
+  --spine-5: oklch(0.53 0.09 195);
+  --spine-6: oklch(0.53 0.12 235);
+  --spine-7: oklch(0.51 0.13 275);
+  --spine-8: oklch(0.53 0.13 315);
+  --spine-9: oklch(0.54 0.12 350);
+  --spine-10: oklch(0.49 0.035 280);
+  --spine-ink: oklch(0.98 0.008 270);
+  --spine-band: oklch(1 0 0 / 26%);
+
+  --leaf: oklch(0.6 0.11 145);
+  --leaf-deep: oklch(0.5 0.1 150);
+  --pot: oklch(0.58 0.1 45);
+  --bloom: oklch(0.72 0.11 265);
 }
 
 @layer base {
