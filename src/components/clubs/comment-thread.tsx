@@ -19,7 +19,7 @@ export type CommentData = {
   id: string;
   body: string;
   createdAt: string;
-  author: { name: string | null; email: string };
+  author: { name: string | null };
   canDelete: boolean;
 };
 
@@ -40,13 +40,13 @@ export function CommentThread({
       <div className="flex gap-3">
         <Avatar className="h-7 w-7 shrink-0">
           <AvatarFallback className="text-xs">
-            {initials(comment.author.name, comment.author.email)}
+            {initials(comment.author.name, dict.common.unnamedReader)}
           </AvatarFallback>
         </Avatar>
         <div className="min-w-0 flex-1 space-y-1">
           <div className="flex items-center justify-between gap-2">
             <span className="text-sm font-medium">
-              {comment.author.name ?? comment.author.email}
+              {comment.author.name ?? dict.common.unnamedReader}
             </span>
             {comment.canDelete && (
               <DeleteCommentButton clubId={clubId} commentId={comment.id} />
@@ -82,13 +82,13 @@ export function CommentThread({
             <li key={r.id} className="flex gap-3">
               <Avatar className="h-6 w-6 shrink-0">
                 <AvatarFallback className="text-[10px]">
-                  {initials(r.author.name, r.author.email)}
+                  {initials(r.author.name, dict.common.unnamedReader)}
                 </AvatarFallback>
               </Avatar>
               <div className="min-w-0 flex-1 space-y-1">
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-sm font-medium">
-                    {r.author.name ?? r.author.email}
+                    {r.author.name ?? dict.common.unnamedReader}
                   </span>
                   {r.canDelete && (
                     <DeleteCommentButton clubId={clubId} commentId={r.id} />

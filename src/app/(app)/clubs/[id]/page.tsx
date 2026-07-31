@@ -41,7 +41,7 @@ export default async function ClubDetailPage({
     where: { id },
     include: {
       currentlyReadingBook: true,
-      owner: { select: { id: true, name: true, email: true } },
+      owner: { select: { id: true, name: true } },
       memberships: {
         include: { user: { select: { id: true, name: true, email: true } } },
         orderBy: { joinedAt: "asc" },
@@ -53,6 +53,18 @@ export default async function ClubDetailPage({
   const myMembership = club.memberships.find((m) => m.userId === user.id);
   const isOwner = club.ownerId === user.id;
   const isMember = !!myMembership;
+
+  // An address is nobody's business but its owner's, and a server component
+  // ships whatever it is handed straight into the page. Drop everyone else's
+  // here so the browser never receives them at all.
+  const membershipsForDisplay = club.memberships.map((m) => ({
+    ...m,
+    user: {
+      id: m.user.id,
+      name: m.user.name,
+      email: m.userId === user.id ? m.user.email : null,
+    },
+  }));
 
   const myUserBookForClub = club.currentlyReadingBookId
     ? await prisma.userBook.findUnique({
@@ -203,7 +215,7 @@ export default async function ClubDetailPage({
         </Card>
 
         <ClubMembers
-          memberships={club.memberships}
+          memberships={membershipsForDisplay}
           progressByUserId={progressByUserId}
           hasCurrentBook={!!club.currentlyReadingBook}
           clubId={club.id}

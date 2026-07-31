@@ -62,7 +62,7 @@ export async function ClubReviews({
           : []),
       ],
     },
-    include: { user: { select: { id: true, name: true, email: true } } },
+    include: { user: { select: { id: true, name: true } } },
     orderBy: [{ reviewUpdatedAt: "desc" }, { ratedAt: "desc" }],
   });
 
@@ -116,13 +116,13 @@ export async function ClubReviews({
             <li key={r.id} className="flex gap-3">
               <Avatar className="h-8 w-8 shrink-0">
                 <AvatarFallback className="text-xs">
-                  {initials(r.user.name, r.user.email)}
+                  {initials(r.user.name, dict.common.unnamedReader)}
                 </AvatarFallback>
               </Avatar>
               <div className="min-w-0 flex-1 space-y-1">
                 <div className="flex items-center gap-3">
                   <span className="text-sm font-medium">
-                    {r.user.name ?? r.user.email}
+                    {r.user.name ?? dict.common.unnamedReader}
                   </span>
                   {r.rating != null && (
                     <StarRating rating={r.rating} readOnly />

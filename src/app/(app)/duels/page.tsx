@@ -23,15 +23,15 @@ async function loadDuels(userId: string) {
     include: {
       book: true,
       club: { select: { id: true, name: true } },
-      challenger: { select: { id: true, name: true, email: true } },
-      opponent: { select: { id: true, name: true, email: true } },
+      challenger: { select: { id: true, name: true } },
+      opponent: { select: { id: true, name: true } },
     },
     orderBy: { createdAt: "desc" },
   });
 }
 
-function displayName(user: { name: string | null; email: string }) {
-  return user.name ?? user.email;
+function displayName(user: { name: string | null }, fallback: string) {
+  return user.name ?? fallback;
 }
 
 export default async function DuelsPage() {
@@ -69,7 +69,7 @@ export default async function DuelsPage() {
             <div className="min-w-0">
               <p className="truncate text-sm font-medium">{duel.book.title}</p>
               <p className="text-muted-foreground truncate text-xs">
-                {dict.duels.versus} {displayName(rival)}
+                {dict.duels.versus} {displayName(rival, dict.common.unnamedReader)}
               </p>
               <Link
                 href={`/clubs/${duel.club.id}`}

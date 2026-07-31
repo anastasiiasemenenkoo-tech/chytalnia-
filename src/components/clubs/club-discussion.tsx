@@ -24,9 +24,9 @@ export async function ClubDiscussion({
   const comments = await prisma.clubComment.findMany({
     where: { clubId, parentId: null },
     include: {
-      author: { select: { name: true, email: true } },
+      author: { select: { name: true } },
       replies: {
-        include: { author: { select: { name: true, email: true } } },
+        include: { author: { select: { name: true } } },
         orderBy: { createdAt: "asc" },
       },
     },

@@ -10,8 +10,8 @@ import {
 } from "@/components/ui/card";
 import { getDictionary } from "@/i18n";
 
-function initials(input: string | null, fallback: string) {
-  const src = (input ?? fallback).trim();
+function initials(input: string | null, fallback: string | null) {
+  const src = (input ?? fallback ?? "").trim();
   if (!src) return "?";
   const parts = src.split(/\s+/);
   if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
@@ -30,7 +30,8 @@ export async function ClubMembers({
     id: string;
     userId: string;
     role: "OWNER" | "MEMBER";
-    user: { id: string; name: string | null; email: string };
+    /** `email` is set only for the signed-in user's own row. */
+    user: { id: string; name: string | null; email: string | null };
   }>;
   progressByUserId: Map<string, { pagesRead: number | null; totalPages: number | null }>;
   hasCurrentBook: boolean;
@@ -60,11 +61,13 @@ export async function ClubMembers({
                     </Avatar>
                     <div className="min-w-0">
                       <p className="truncate text-sm">
-                        {m.user.name ?? m.user.email}
+                        {m.user.name ?? dict.common.unnamedReader}
                       </p>
-                      <p className="text-muted-foreground truncate text-xs">
-                        {m.user.email}
-                      </p>
+                      {m.user.email && (
+                        <p className="text-muted-foreground truncate text-xs">
+                          {m.user.email}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className="flex shrink-0 items-center gap-2">
