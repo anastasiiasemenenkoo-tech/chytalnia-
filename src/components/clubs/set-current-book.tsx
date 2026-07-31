@@ -51,7 +51,17 @@ export function SetCurrentBook({
         <div className="min-w-40 flex-1">
           <Select name="bookId" defaultValue={currentBookId ?? undefined}>
             <SelectTrigger>
-              <SelectValue placeholder={dict.clubs.setPlaceholder} />
+              {/* Same trap `shelf-controls.tsx` fell into: Base UI puts the
+                  raw value on the trigger unless handed a formatter, so this
+                  showed a cuid where the book's title belongs. */}
+              <SelectValue>
+                {(value: string | null) => {
+                  const picked = options.find((b) => b.id === value);
+                  return picked
+                    ? `${picked.title} — ${picked.author}`
+                    : dict.clubs.setPlaceholder;
+                }}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               {options.map((b) => (

@@ -18,7 +18,16 @@ export function ReadingProgressBar({
 
   const safeTotal = Math.max(totalPages, 1);
   const safeRead = Math.min(Math.max(pagesRead, 0), safeTotal);
-  const pct = Math.round((safeRead / safeTotal) * 100);
+  // Rounding put 319 of 320 pages at "100%", which is the one number a
+  // reader will argue with — a page still left is not a finished book.
+  // Same at the bottom: a page in is not "0%".
+  const exact = (safeRead / safeTotal) * 100;
+  const pct =
+    safeRead >= safeTotal
+      ? 100
+      : safeRead <= 0
+        ? 0
+        : Math.min(Math.max(Math.round(exact), 1), 99);
 
   return (
     <div className={className}>

@@ -122,7 +122,10 @@ function SelectItem({
       )}
       {...props}
     >
-      <SelectPrimitive.ItemText className="flex flex-1 shrink-0 gap-2 whitespace-nowrap">
+      {/* `shrink-0` with `whitespace-nowrap` let a long option run out past
+          the item's pr-8 and underneath the check mark. It may take the room
+          it has and truncate. */}
+      <SelectPrimitive.ItemText className="flex min-w-0 flex-1 gap-2 truncate">
         {children}
       </SelectPrimitive.ItemText>
       <SelectPrimitive.ItemIndicator
