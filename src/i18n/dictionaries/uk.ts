@@ -20,6 +20,9 @@ export const uk = {
     delete: "Видалити",
     loading: "Завантаження…",
     optional: "необов’язково",
+    // Stands in wherever someone else's name is missing. Their email used to
+    // fill that gap, which showed it to the whole club.
+    unnamedReader: "Читач",
     yes: "Так",
     no: "Ні",
   },
@@ -254,7 +257,7 @@ export const uk = {
     newClub: "Новий клуб",
     mySection: "Мої клуби",
     discoverSection: "Знайти клуби",
-    emptyMine: "Читаєш наодинці. Теж непогано, але вдвох цікавіше.",
+    emptyMine: "Читаєш наодинці. Теж непогано, але в компанії цікавіше.",
     emptyOthersPrefix: "Поки що інших клубів немає. ",
     emptyOthersAction: "Створи перший",
     emptyOthersSuffix: ".",
@@ -272,7 +275,7 @@ export const uk = {
     invalid: "Такого клубу немає.",
     createTitle: "Створити книжковий клуб",
     createSubtitle:
-      "Ти станеш власником. Учасники зможуть приєднатися зі списку клубів.",
+      "Клуб буде твій — тобі й обирати, що читати разом. Інші знайдуть його у списку клубів і приєднаються самі.",
     nameLabel: "Назва",
     namePlaceholder: "Наприклад: Наукова фантастика по суботах",
     descriptionLabel: "Опис (необов’язково)",

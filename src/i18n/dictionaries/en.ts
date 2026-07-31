@@ -12,6 +12,7 @@ export const en: Dictionary = {
     delete: "Delete",
     loading: "Loading…",
     optional: "optional",
+    unnamedReader: "Reader",
     yes: "Yes",
     no: "No",
   },
@@ -258,7 +259,7 @@ export const en: Dictionary = {
     invalid: "No such club.",
     createTitle: "Start a book club",
     createSubtitle:
-      "You'll be the owner. Members can join from the clubs list.",
+      "The club will be yours, so you pick what everyone reads. Others will find it in the clubs list and join on their own.",
     nameLabel: "Name",
     namePlaceholder: "Sci-Fi Saturday",
     descriptionLabel: "Description (optional)",
