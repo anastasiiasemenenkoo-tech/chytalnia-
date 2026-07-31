@@ -6,6 +6,10 @@ import { randomUUID } from "node:crypto";
 import { settleDuelsForFinishedBook } from "@/actions/duels";
 import { getDictionary } from "@/i18n";
 import { prisma } from "@/lib/db";
+import {
+  searchOpenLibrary,
+  type OpenLibraryHit,
+} from "@/lib/openlibrary";
 import { requireCurrentUser } from "@/lib/session";
 import { upsertUserBook } from "@/lib/user-books";
 import {
@@ -21,6 +25,16 @@ import {
 } from "@/lib/validators";
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
+
+/**
+ * Open Library search for callers that can't use the `/books/search` page —
+ * the club dialog, for one. Behind the session so the app isn't a free
+ * proxy to someone else's API.
+ */
+export async function searchBooks(query: string): Promise<OpenLibraryHit[]> {
+  await requireCurrentUser();
+  return searchOpenLibrary(query);
+}
 
 export async function addBookToShelf(formData: FormData): Promise<ActionResult> {
   const user = await requireCurrentUser();

@@ -317,9 +317,8 @@ export const uk = {
     addBookAction: "Додати книгу",
     addBookTitle: "Нова книга для клубу",
     addBookSubtitle:
-      "Вона стане на твою полицю «Читаю зараз» і одразу піде клубу.",
-    addBookSubmit: "Додати й обрати",
-    addBookSaving: "Додаємо…",
+      "Знайди книгу — вона стане на твою полицю «Читаю зараз» і одразу стане книгою клубу.",
+    addBookSearching: "Шукаємо…",
     addBookAdded: "Книгу додано й обрано для клубу.",
     setPlaceholder: "Обери книгу",
     setSave: "Зберегти",

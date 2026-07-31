@@ -103,8 +103,10 @@ export const SetClubBookSchema = z.object({
 /** Adding a book to your own shelf and to the club in one step. */
 export const AddClubBookSchema = z.object({
   clubId: z.string().trim().min(1),
+  olid: z.string().trim().min(1).max(120),
   title: z.string().trim().min(1).max(300),
   author: z.string().trim().min(1).max(300),
+  coverUrl: z.string().trim().url().optional().or(z.literal("")),
 });
 
 /** Same shape as creating one — the edit form offers the same two fields. */

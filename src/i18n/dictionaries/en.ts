@@ -301,9 +301,8 @@ export const en: Dictionary = {
     addBookAction: "Add a book",
     addBookTitle: "A new book for the club",
     addBookSubtitle:
-      "It goes on your “Reading now” shelf and straight to the club.",
-    addBookSubmit: "Add and pick",
-    addBookSaving: "Adding…",
+      "Find a book — it goes on your “Reading now” shelf and becomes the club's book at once.",
+    addBookSearching: "Searching…",
     addBookAdded: "Book added and picked for the club.",
     setPlaceholder: "Choose a book",
     setSave: "Save",

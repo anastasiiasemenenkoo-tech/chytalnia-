@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { randomUUID } from "node:crypto";
 
 import { getDictionary } from "@/i18n";
 import { prisma } from "@/lib/db";
@@ -157,8 +156,10 @@ export async function addBookForClub(
   const dict = await getDictionary();
   const parsed = AddClubBookSchema.safeParse({
     clubId: formData.get("clubId"),
+    olid: formData.get("olid"),
     title: formData.get("title"),
     author: formData.get("author"),
+    coverUrl: formData.get("coverUrl") ?? "",
   });
   if (!parsed.success) return { ok: false, error: dict.books.invalidData };
 
@@ -170,11 +171,20 @@ export async function addBookForClub(
     return { ok: false, error: dict.clubs.setOnlyOwner };
   }
 
-  const book = await prisma.book.create({
-    data: {
-      olid: `manual:${randomUUID()}`,
+  // Upsert, not create: the same Open Library work may already be on
+  // somebody's shelf, and `olid` is unique.
+  const book = await prisma.book.upsert({
+    where: { olid: parsed.data.olid },
+    update: {
       title: parsed.data.title,
       author: parsed.data.author,
+      coverUrl: parsed.data.coverUrl || null,
+    },
+    create: {
+      olid: parsed.data.olid,
+      title: parsed.data.title,
+      author: parsed.data.author,
+      coverUrl: parsed.data.coverUrl || null,
     },
   });
 
