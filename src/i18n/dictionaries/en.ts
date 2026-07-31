@@ -47,13 +47,13 @@ export const en: Dictionary = {
       "Keep a personal log of what you've read, what you're reading, and what's next. Join book clubs and see what everyone's into.",
     cta: "Create your bookshelf",
     ctaSecondary: "I already have an account",
-    featureShelvesTitle: "Three shelves",
+    featureShelvesTitle: "Your shelves",
     featureShelvesBody:
       "Track what you want to read, what you're reading, and what you've finished.",
-    featureSearchTitle: "Open Library search",
+    featureSearchTitle: "Your search",
     featureSearchBody:
       "Find any book by title or author. Covers come along for free.",
-    featureClubsTitle: "Book clubs",
+    featureClubsTitle: "Your clubs",
     featureClubsBody:
       "Join a club or start your own, then pick what everyone's reading.",
     builtOn: "Built on Next.js 16 · Auth.js · Prisma · Tailwind v4 · shadcn/ui",

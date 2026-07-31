@@ -60,9 +60,9 @@ export const uk = {
     featureShelvesTitle: "Твої полиці",
     featureShelvesBody:
       "Зберігай те, що хочеш прочитати, що читаєш зараз, і що вже прочитане.",
-    featureSearchTitle: "Пошук книг",
+    featureSearchTitle: "Твій пошук",
     featureSearchBody: "Знайди будь-яку книгу за назвою чи автором.",
-    featureClubsTitle: "Твої книжкові клуби",
+    featureClubsTitle: "Твої клуби",
     featureClubsBody:
       "Долучайся до клубу або створи свій і обирай, що читати разом.",
     builtOn: "Зроблено на Next.js 16 · Auth.js · Prisma · Tailwind v4 · shadcn/ui",
