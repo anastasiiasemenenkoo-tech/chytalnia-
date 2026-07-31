@@ -29,16 +29,33 @@ export const NAV: NavItem[] = [
   { href: "/duels", labelKey: "duels", icon: Swords },
 ];
 
+/**
+ * The most specific item wins. `/books/search` sits under `/books`, so a
+ * plain prefix test lit both of them up at once; only the longest matching
+ * href counts as active.
+ */
+function activeHref(pathname: string): string | null {
+  let best: string | null = null;
+  for (const item of NAV) {
+    const matches =
+      pathname === item.href ||
+      (item.href !== "/dashboard" && pathname.startsWith(`${item.href}/`));
+    if (matches && (best === null || item.href.length > best.length)) {
+      best = item.href;
+    }
+  }
+  return best;
+}
+
 export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   const dict = useDict();
+  const current = activeHref(pathname);
   return (
     <nav className="flex flex-1 flex-col gap-1 p-3">
       {NAV.map((item) => {
         const Icon = item.icon;
-        const active =
-          pathname === item.href ||
-          (item.href !== "/dashboard" && pathname.startsWith(item.href));
+        const active = item.href === current;
         return (
           <Link
             key={item.href}
