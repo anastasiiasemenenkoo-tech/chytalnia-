@@ -60,7 +60,11 @@ export function ShelfControls({
     <div className="flex items-center gap-2">
       <Select defaultValue={shelf} onValueChange={onChange} disabled={pending}>
         <SelectTrigger className="h-8 w-[150px] text-xs">
-          <SelectValue />
+          {/* Base UI renders the raw value unless told otherwise, which showed
+              "ABANDONED" on the trigger while the options read "Недочитано". */}
+          <SelectValue>
+            {(value: ShelfValue) => dict.shelves[value]}
+          </SelectValue>
         </SelectTrigger>
         <SelectContent>
           {(["WANT_TO_READ", "READING", "READ", "ABANDONED"] as const).map((s) => (

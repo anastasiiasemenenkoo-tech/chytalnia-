@@ -31,7 +31,7 @@ export const uk = {
     ABANDONED: "Недочитано",
   },
   nav: {
-    overview: "Огляд",
+    overview: "Моя Читальня",
     myBooks: "Мої книги",
     findBooks: "Знайти книги",
     clubs: "Книжкові клуби",
@@ -124,8 +124,8 @@ export const uk = {
     },
   },
   dashboard: {
-    title: "Огляд",
-    subtitle: "Знімок твого читацького життя.",
+    title: "Моя Читальня",
+    subtitle: "Все твоє читання — на одному розвороті.",
     bookClubsCard: "Книжкові клуби",
     browse: "Переглянути",
     view: "Деталі",
@@ -142,6 +142,17 @@ export const uk = {
     findBooks: "Знайти книги",
     addManually: "Додати вручну",
     tabAll: "Усі",
+    // Keyed by Intl.PluralRules categories — uk uses one/few/many, en one/other.
+    bookCount: {
+      one: "{count} книга",
+      few: "{count} книги",
+      many: "{count} книг",
+      other: "{count} книг",
+    },
+    shelfEmpty: "Порожня полиця",
+    scrollLeft: "Прокрутити ліворуч",
+    scrollRight: "Прокрутити праворуч",
+    openShelf: "Відкрити полицю",
     emptyShelf: "На полиці «{label}» поки нічого немає.",
     emptyAbandoned:
       "Жодної покинутої книги — або сила волі, або щастя з вибором.",
@@ -150,7 +161,9 @@ export const uk = {
     searchTitle: "Знайти книги",
     searchSubtitle:
       "Мільйони книг в Open Library чекають. Знайди свою — і на полицю її.",
-    searchPlaceholder: "Гобіт, Ле Ґуїн, Сапієнс…",
+    // Open Library's Cyrillic index is thin — these three actually return
+    // hits, unlike the direct translations of the English examples.
+    searchPlaceholder: "Кобзар, Забужко, Гаррі Поттер…",
     search: "Шукати",
     typeToBegin: "Назва, автор, кілька літер — з чогось треба почати.",
     noResults: "Тиша у відповідь. Спробуй іншу назву чи автора.",

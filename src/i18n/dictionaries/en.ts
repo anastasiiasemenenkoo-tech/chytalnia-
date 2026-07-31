@@ -134,6 +134,16 @@ export const en: Dictionary = {
     findBooks: "Find books",
     addManually: "Add manually",
     tabAll: "All",
+    bookCount: {
+      one: "{count} book",
+      few: "{count} books",
+      many: "{count} books",
+      other: "{count} books",
+    },
+    shelfEmpty: "Empty shelf",
+    scrollLeft: "Scroll left",
+    scrollRight: "Scroll right",
+    openShelf: "Open shelf",
     emptyShelf: 'No books on "{label}" yet.',
     emptyAbandoned:
       "Not a single book abandoned — either willpower or good taste.",

@@ -81,6 +81,13 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.9 0.014 80);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* The shelf plank on /books. Same warm hue family as the paper background,
+     just deeper — stained oak rather than a painted accent. */
+  --shelf-wood: oklch(0.74 0.045 70);
+  --shelf-wood-lit: oklch(0.82 0.04 75);
+  --shelf-wood-edge: oklch(0.63 0.05 62);
+  --shelf-contact: oklch(0.4 0.03 65 / 22%);
 }
 
 .dark {
@@ -115,6 +122,13 @@
   --sidebar-accent-foreground: oklch(0.96 0.006 80);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  /* Walnut rather than oak: at the light theme's lightness the plank glows
+     against the dark background and outshines the covers. */
+  --shelf-wood: oklch(0.42 0.035 60);
+  --shelf-wood-lit: oklch(0.5 0.035 65);
+  --shelf-wood-edge: oklch(0.32 0.03 55);
+  --shelf-contact: oklch(0 0 0 / 45%);
 }
 
 @layer base {
