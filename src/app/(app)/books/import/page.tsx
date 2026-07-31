@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getDictionary } from "@/i18n";
+import { cn } from "@/lib/utils";
 
 // Cover lookups make one Open Library request per book — large libraries can
 // take a while, so give this route (and the server action it invokes) more
@@ -24,11 +25,9 @@ export default async function GoodreadsImportPage() {
     <div className="mx-auto max-w-xl space-y-6">
       <Link
         href="/books"
-        className={buttonVariants({
-          variant: "ghost",
-          size: "sm",
-          className: "-ml-2",
-        })}
+        className={cn(
+          buttonVariants({ variant: "ghost", size: "sm", className: "-ml-2" }),
+        )}
       >
         <ArrowLeft className="mr-2 h-4 w-4" />
         {dict.books.title}

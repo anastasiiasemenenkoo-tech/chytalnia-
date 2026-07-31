@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { getDictionary } from "@/i18n";
 import { prisma } from "@/lib/db";
 import { requireCurrentUser } from "@/lib/session";
+import { cn } from "@/lib/utils";
 
 export default async function ClubsPage() {
   const user = await requireCurrentUser();
@@ -36,7 +37,7 @@ export default async function ClubsPage() {
           </h1>
           <p className="text-muted-foreground text-sm">{dict.clubs.subtitle}</p>
         </div>
-        <Link href="/clubs/new" className={buttonVariants()}>
+        <Link href="/clubs/new" className={cn(buttonVariants())}>
           <Plus className="mr-2 h-4 w-4" />
           {dict.clubs.newClub}
         </Link>

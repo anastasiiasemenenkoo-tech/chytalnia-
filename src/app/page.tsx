@@ -5,6 +5,7 @@ import { BookOpen, Library, Search, Users } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { auth } from "@/auth";
 import { getDictionary } from "@/i18n";
+import { cn } from "@/lib/utils";
 
 export default async function Home() {
   const [session, dict] = await Promise.all([auth(), getDictionary()]);
@@ -45,10 +46,13 @@ export default async function Home() {
           </span>
         </Link>
         <div className="flex items-center gap-2">
-          <Link href="/login" className={buttonVariants({ variant: "ghost" })}>
+          <Link
+            href="/login"
+            className={cn(buttonVariants({ variant: "ghost" }))}
+          >
             {dict.landing.signIn}
           </Link>
-          <Link href="/signup" className={buttonVariants()}>
+          <Link href="/signup" className={cn(buttonVariants())}>
             {dict.landing.getStarted}
           </Link>
         </div>
@@ -62,12 +66,12 @@ export default async function Home() {
           {dict.landing.blurb}
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <Link href="/signup" className={buttonVariants({ size: "lg" })}>
+          <Link href="/signup" className={cn(buttonVariants({ size: "lg" }))}>
             {dict.landing.cta}
           </Link>
           <Link
             href="/login"
-            className={buttonVariants({ size: "lg", variant: "outline" })}
+            className={cn(buttonVariants({ size: "lg", variant: "outline" }))}
           >
             {dict.landing.ctaSecondary}
           </Link>

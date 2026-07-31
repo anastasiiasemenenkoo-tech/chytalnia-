@@ -14,6 +14,7 @@ import {
 import { getDictionary } from "@/i18n";
 import { prisma } from "@/lib/db";
 import { requireCurrentUser } from "@/lib/session";
+import { cn } from "@/lib/utils";
 import type { ShelfValue } from "@/lib/validators";
 
 const SHELVES: ShelfValue[] = [
@@ -114,28 +115,30 @@ export default async function DashboardPage() {
       />
 
       <section>
-        <div className="mb-4 flex items-center justify-between">
+        {/* Three labelled buttons want 426px; a phone gives them 343. Let
+            both rows wrap rather than run off the side of the screen. */}
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
           <h2 className="text-lg font-semibold">
             {dict.dashboard.currentlyReading}
           </h2>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Link
               href="/books/search"
-              className={buttonVariants({ variant: "outline", size: "sm" })}
+              className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
             >
               <Search className="mr-2 h-4 w-4" />
               {dict.dashboard.findBooks}
             </Link>
             <Link
               href="/books"
-              className={buttonVariants({ variant: "outline", size: "sm" })}
+              className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
             >
               <Library className="mr-2 h-4 w-4" />
               {dict.dashboard.allMyBooks}
             </Link>
             <Link
               href="/clubs"
-              className={buttonVariants({ variant: "outline", size: "sm" })}
+              className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
             >
               <Users className="mr-2 h-4 w-4" />
               {dict.dashboard.clubs}
@@ -151,7 +154,7 @@ export default async function DashboardPage() {
               </p>
               <Link
                 href="/books/search"
-                className={buttonVariants({ className: "mt-4" })}
+                className={cn(buttonVariants({ className: "mt-4" }))}
               >
                 {dict.dashboard.findYourNextBook}
               </Link>

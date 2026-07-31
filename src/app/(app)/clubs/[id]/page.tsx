@@ -26,6 +26,7 @@ import { getDictionary } from "@/i18n";
 import { interpolate } from "@/i18n/interpolate";
 import { prisma } from "@/lib/db";
 import { requireCurrentUser } from "@/lib/session";
+import { cn } from "@/lib/utils";
 
 export default async function ClubDetailPage({
   params,
@@ -101,11 +102,9 @@ export default async function ClubDetailPage({
     <div className="mx-auto max-w-4xl space-y-8">
       <Link
         href="/clubs"
-        className={buttonVariants({
-          variant: "ghost",
-          size: "sm",
-          className: "-ml-2",
-        })}
+        className={cn(
+          buttonVariants({ variant: "ghost", size: "sm", className: "-ml-2" }),
+        )}
       >
         <ArrowLeft className="mr-2 h-4 w-4" />
         {dict.clubs.backToClubs}

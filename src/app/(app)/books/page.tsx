@@ -66,14 +66,14 @@ export default async function BooksPage({
           <ManualEntryDialog />
           <Link
             href="/books/import"
-            className={buttonVariants({ variant: "outline", size: "sm" })}
+            className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
           >
             <Upload className="mr-2 h-4 w-4" />
             {dict.books.importLink}
           </Link>
           <Link
             href="/books/search"
-            className={buttonVariants({ size: "sm" })}
+            className={cn(buttonVariants({ size: "sm" }))}
           >
             <Search className="mr-2 h-4 w-4" />
             {dict.books.findBooks}
@@ -118,7 +118,7 @@ export default async function BooksPage({
             </p>
             <Link
               href="/books/search"
-              className={buttonVariants({ className: "mt-4" })}
+              className={cn(buttonVariants({ className: "mt-4" }))}
             >
               {dict.books.findFirst}
             </Link>
