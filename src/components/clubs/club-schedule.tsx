@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { ClubScheduleForm } from "@/components/clubs/club-schedule-form";
 import { Badge } from "@/components/ui/badge";
 import { getDictionary, getLocale } from "@/i18n";
-import { interpolate } from "@/i18n/interpolate";
+import { plural } from "@/i18n/plural";
 import { prisma } from "@/lib/db";
 
 function toDateInputValue(date: Date | null) {
@@ -47,7 +47,7 @@ export async function ClubSchedule({
     } else {
       statusBadge = (
         <Badge variant="secondary">
-          {interpolate(dict.clubs.scheduleDaysLeft, { n: diffDays })}
+          {plural(dict.clubs.scheduleDaysLeft, diffDays, locale)}
         </Badge>
       );
     }

@@ -1,5 +1,5 @@
 import { ReadingProgressBar } from "@/components/books/reading-progress-bar";
-import { AddClubMemberDialog } from "@/components/clubs/add-club-member-dialog";
+import { InviteLinkDialog } from "@/components/clubs/invite-link-dialog";
 import { RemoveMemberButton } from "@/components/clubs/remove-member-button";
 import { ChallengeButton } from "@/components/duels/challenge-button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -49,7 +49,7 @@ export async function ClubMembers({
     <Card>
       <CardHeader className="flex flex-wrap items-center justify-between gap-2">
         <CardTitle>{dict.clubs.membersTitle}</CardTitle>
-        {isOwner && <AddClubMemberDialog clubId={clubId} />}
+        {isOwner && <InviteLinkDialog clubId={clubId} />}
       </CardHeader>
       <CardContent>
         <ul className="space-y-4">

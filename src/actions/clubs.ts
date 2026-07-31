@@ -10,7 +10,6 @@ import { requireCurrentUser } from "@/lib/session";
 import { upsertUserBook } from "@/lib/user-books";
 import {
   AddClubBookSchema,
-  AddClubMemberSchema,
   ClubIdSchema,
   ClubMemberSchema,
   ClubScheduleSchema,
@@ -264,47 +263,6 @@ export async function removeClubMember(
   return { ok: true };
 }
 
-export async function addClubMember(
-  formData: FormData,
-): Promise<ActionResult> {
-  const user = await requireCurrentUser();
-  const dict = await getDictionary();
-  const parsed = AddClubMemberSchema.safeParse({
-    clubId: formData.get("clubId"),
-    email: formData.get("email"),
-  });
-  if (!parsed.success) return { ok: false, error: dict.clubs.addMemberBadEmail };
-
-  if (!(await requireClubOwner(parsed.data.clubId, user.id))) {
-    return { ok: false, error: dict.clubs.ownerOnly };
-  }
-
-  const invitee = await prisma.user.findUnique({
-    where: { email: parsed.data.email },
-    select: { id: true },
-  });
-  if (!invitee) return { ok: false, error: dict.clubs.addMemberNoSuchReader };
-
-  const existing = await prisma.clubMembership.findUnique({
-    where: {
-      userId_clubId: { userId: invitee.id, clubId: parsed.data.clubId },
-    },
-    select: { id: true },
-  });
-  if (existing) return { ok: false, error: dict.clubs.addMemberAlready };
-
-  await prisma.clubMembership.create({
-    data: {
-      userId: invitee.id,
-      clubId: parsed.data.clubId,
-      role: "MEMBER",
-    },
-  });
-
-  revalidatePath("/clubs");
-  revalidatePath(`/clubs/${parsed.data.clubId}`);
-  return { ok: true };
-}
 
 export async function updateClubSchedule(
   formData: FormData,

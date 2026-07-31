@@ -117,10 +117,6 @@ export const ClubMemberSchema = z.object({
   userId: z.string().trim().min(1),
 });
 
-export const AddClubMemberSchema = z.object({
-  clubId: z.string().trim().min(1),
-  email: z.string().trim().toLowerCase().email(),
-});
 
 export const UpdateProgressSchema = z
   .object({
