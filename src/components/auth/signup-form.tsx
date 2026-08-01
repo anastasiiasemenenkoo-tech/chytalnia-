@@ -40,7 +40,7 @@ export function SignupForm() {
           <Separator className="flex-1" />
         </div>
       </CardContent>
-      <form action={action}>
+      <form action={action} noValidate>
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name">{dict.auth.name}</Label>

@@ -46,7 +46,7 @@ export function ForgotPasswordForm() {
         <CardTitle>{dict.auth.forgotPasswordTitle}</CardTitle>
         <CardDescription>{dict.auth.forgotPasswordSubtitle}</CardDescription>
       </CardHeader>
-      <form action={action}>
+      <form action={action} noValidate>
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">{dict.auth.email}</Label>

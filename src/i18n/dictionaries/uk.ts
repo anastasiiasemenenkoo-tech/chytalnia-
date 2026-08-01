@@ -143,7 +143,8 @@ export const uk = {
     continueWithGoogle: "Продовжити з Google",
     orContinueWith: "або",
     validation: {
-      invalidEmail: "За такою адресою лист не дійде. Перечитаєш?",
+      invalidEmail:
+        "За такою адресою лист не дійде. Треба щось на кшталт chytach@poshta.com.",
       nameRequired: "А як до тебе звертатися? Без імені не пустимо.",
       nameLettersOnly: "Тільки літери, будь ласка — цифри лишимо для номерів сторінок.",
       passwordTooShort:

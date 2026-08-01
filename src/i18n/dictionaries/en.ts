@@ -129,7 +129,8 @@ export const en: Dictionary = {
     continueWithGoogle: "Continue with Google",
     orContinueWith: "or",
     validation: {
-      invalidEmail: "No letter would ever reach that address. Care to re-read it?",
+      invalidEmail:
+        "No letter would ever reach that address. It wants something like reader@postbox.com.",
       nameRequired: "What should we call you? A name, please.",
       nameLettersOnly: "Letters only — let's save the digits for page numbers.",
       passwordTooShort:

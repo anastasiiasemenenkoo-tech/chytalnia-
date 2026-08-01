@@ -40,7 +40,7 @@ export function LoginForm({ justReset = false }: { justReset?: boolean }) {
           <Separator className="flex-1" />
         </div>
       </CardContent>
-      <form action={action}>
+      <form action={action} noValidate>
         <CardContent className="space-y-4">
           {justReset && (
             <p className="text-sm text-emerald-600 dark:text-emerald-400">
