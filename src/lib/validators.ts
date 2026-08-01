@@ -136,6 +136,20 @@ export const EditClubSchema = CreateClubSchema.extend({
   meetingUrl: MeetingUrl,
 });
 
+export const UpdateProfileSchema = z.object({
+  name: nameField,
+  email: z.email("invalidEmail").trim().toLowerCase(),
+});
+
+/**
+ * Deleting an account asks for the address back rather than a checkbox: it
+ * is the one string only the person at the keyboard is looking at, and it
+ * needs no translating.
+ */
+export const DeleteAccountSchema = z.object({
+  confirm: z.string().trim().toLowerCase(),
+});
+
 export const ReaderIdSchema = z.object({
   readerId: z.string().trim().min(1),
 });

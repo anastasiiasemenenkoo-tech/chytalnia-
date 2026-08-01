@@ -6,6 +6,7 @@ const PROTECTED_PREFIXES = [
   "/clubs",
   "/duels",
   "/readers",
+  "/settings",
 ];
 const AUTH_PAGES = ["/login", "/signup", "/forgot-password", "/reset-password"];
 

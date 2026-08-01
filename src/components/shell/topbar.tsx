@@ -1,10 +1,10 @@
 import { LogOut } from "lucide-react";
 
 import { logoutAction } from "@/actions/auth";
+import { AccountMenu } from "@/components/shell/account-menu";
 import { LanguageToggle } from "@/components/shell/language-toggle";
 import { MobileNav } from "@/components/shell/mobile-nav";
 import { ThemeToggle } from "@/components/shell/theme-toggle";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { getDictionary, getLocale } from "@/i18n";
 import { interpolate } from "@/i18n/interpolate";
@@ -20,7 +20,7 @@ function initials(input: string | null | undefined, fallback: string) {
 export async function Topbar({
   user,
 }: {
-  user: { email: string; name: string | null };
+  user: { id: string; email: string; name: string | null };
 }) {
   const [dict, locale] = await Promise.all([getDictionary(), getLocale()]);
 
@@ -39,11 +39,10 @@ export async function Topbar({
       <div className="flex shrink-0 items-center gap-2">
         <LanguageToggle locale={locale} />
         <ThemeToggle />
-        <Avatar className="h-8 w-8">
-          <AvatarFallback className="text-xs">
-            {initials(user.name, user.email)}
-          </AvatarFallback>
-        </Avatar>
+        <AccountMenu
+          userId={user.id}
+          initials={initials(user.name, user.email)}
+        />
         <form action={logoutAction}>
           <Button
             type="submit"
