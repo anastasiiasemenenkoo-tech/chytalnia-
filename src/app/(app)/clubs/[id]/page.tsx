@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Users } from "lucide-react";
+import { ArrowLeft, Users, Video } from "lucide-react";
 
 import { BookCover } from "@/components/books/book-cover";
 import { ReadingProgressBar } from "@/components/books/reading-progress-bar";
@@ -145,6 +145,7 @@ export default async function ClubDetailPage({
               clubId={club.id}
               name={club.name}
               description={club.description}
+              meetingUrl={club.meetingUrl}
             />
           )}
           <JoinLeaveButton
@@ -220,6 +221,24 @@ export default async function ClubDetailPage({
             )}
             {club.currentlyReadingBook && (
               <ClubSchedule clubId={club.id} isOwner={isOwner} />
+            )}
+            {/* Members only. Anyone signed in can read this page, and a call
+                link is an open door to the call — joining the club first is
+                a low bar, but it is the one the club chose. */}
+            {isMember && club.meetingUrl && (
+              <div className="border-t pt-3">
+                <a
+                  href={club.meetingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cn(
+                    buttonVariants({ variant: "outline", size: "sm" }),
+                  )}
+                >
+                  <Video className="mr-2 h-4 w-4" />
+                  {dict.clubs.meetingJoin}
+                </a>
+              </div>
             )}
           </CardContent>
         </Card>

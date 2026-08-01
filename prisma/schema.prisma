@@ -102,6 +102,8 @@ model BookClub {
   id                     String   @id @default(cuid())
   name                   String
   description            String?
+  /// Where the club meets to talk — a Google Meet room, or any other call.
+  meetingUrl             String?
   ownerId                String
   currentlyReadingBookId String?
   createdAt              DateTime @default(now())

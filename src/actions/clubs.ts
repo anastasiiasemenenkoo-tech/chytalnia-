@@ -215,8 +215,18 @@ export async function editClub(formData: FormData): Promise<ActionResult> {
     clubId: formData.get("clubId"),
     name: formData.get("name"),
     description: formData.get("description") ?? "",
+    meetingUrl: formData.get("meetingUrl") ?? "",
   });
-  if (!parsed.success) return { ok: false, error: dict.clubs.editInvalid };
+  if (!parsed.success) {
+    // A bad link and a bad name are different mistakes; say which.
+    const fields = parsed.error.flatten().fieldErrors;
+    return {
+      ok: false,
+      error: fields.meetingUrl
+        ? dict.clubs.meetingUrlInvalid
+        : dict.clubs.editInvalid,
+    };
+  }
 
   if (!(await requireClubOwner(parsed.data.clubId, user.id))) {
     return { ok: false, error: dict.clubs.ownerOnly };
@@ -227,6 +237,7 @@ export async function editClub(formData: FormData): Promise<ActionResult> {
     data: {
       name: parsed.data.name,
       description: parsed.data.description || null,
+      meetingUrl: parsed.data.meetingUrl || null,
     },
   });
 

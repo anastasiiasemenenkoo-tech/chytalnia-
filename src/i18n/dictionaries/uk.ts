@@ -297,6 +297,12 @@ export const uk = {
     editSaving: "Зберігаємо…",
     editSaved: "Клуб оновлено.",
     editInvalid: "Назва — від 2 символів, опис — до 500.",
+    meetingUrlLabel: "Посилання на зустріч",
+    meetingUrlHint:
+      "Google Meet, Zoom — будь-яке посилання на дзвінок. Побачать лише учасники клубу. Залиш порожнім, щоб прибрати.",
+    meetingUrlInvalid:
+      "Посилання має починатися з http:// або https://. Скопіюй його з адресного рядка.",
+    meetingJoin: "Приєднатися до зустрічі",
     removeMemberAction: "Прибрати з клубу",
     removeMemberConfirm: "Прибрати {name} з клубу?",
     removeMemberConfirmBody:

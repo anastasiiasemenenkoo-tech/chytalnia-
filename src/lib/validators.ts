@@ -109,9 +109,31 @@ export const AddClubBookSchema = z.object({
   coverUrl: z.string().trim().url().optional().or(z.literal("")),
 });
 
-/** Same shape as creating one — the edit form offers the same two fields. */
+/**
+ * A link the club page turns into something clickable, so the protocol is
+ * checked rather than assumed: `new URL()` — and so Zod's `.url()` — happily
+ * accepts `javascript:alert(1)`, which would land as an href.
+ */
+const MeetingUrl = z
+  .string()
+  .trim()
+  .max(500)
+  .refine(
+    (value) => {
+      try {
+        const { protocol } = new URL(value);
+        return protocol === "http:" || protocol === "https:";
+      } catch {
+        return false;
+      }
+    },
+    { message: "meetingUrlInvalid" },
+  )
+  .or(z.literal(""));
+
 export const EditClubSchema = CreateClubSchema.extend({
   clubId: z.string().trim().min(1),
+  meetingUrl: MeetingUrl,
 });
 
 export const ClubMemberSchema = z.object({

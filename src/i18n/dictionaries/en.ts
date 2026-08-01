@@ -281,6 +281,12 @@ export const en: Dictionary = {
     editSaving: "Saving…",
     editSaved: "Club updated.",
     editInvalid: "Name needs 2 characters or more; description, 500 or fewer.",
+    meetingUrlLabel: "Meeting link",
+    meetingUrlHint:
+      "Google Meet, Zoom — any call link. Only club members see it. Leave empty to remove it.",
+    meetingUrlInvalid:
+      "The link has to start with http:// or https://. Copy it from the address bar.",
+    meetingJoin: "Join the meeting",
     removeMemberAction: "Remove from club",
     removeMemberConfirm: "Remove {name} from the club?",
     removeMemberConfirmBody:

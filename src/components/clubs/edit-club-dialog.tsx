@@ -24,10 +24,12 @@ export function EditClubDialog({
   clubId,
   name,
   description,
+  meetingUrl,
 }: {
   clubId: string;
   name: string;
   description: string | null;
+  meetingUrl: string | null;
 }) {
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
@@ -80,6 +82,23 @@ export function EditClubDialog({
               defaultValue={description ?? ""}
               maxLength={500}
             />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="club-meeting-url">
+              {dict.clubs.meetingUrlLabel}
+            </Label>
+            <Input
+              id="club-meeting-url"
+              name="meetingUrl"
+              type="url"
+              inputMode="url"
+              placeholder="https://meet.google.com/abc-defg-hij"
+              defaultValue={meetingUrl ?? ""}
+              maxLength={500}
+            />
+            <p className="text-muted-foreground text-xs">
+              {dict.clubs.meetingUrlHint}
+            </p>
           </div>
           <DialogFooter>
             <Button type="submit" disabled={pending}>
