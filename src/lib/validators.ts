@@ -136,6 +136,10 @@ export const EditClubSchema = CreateClubSchema.extend({
   meetingUrl: MeetingUrl,
 });
 
+export const ReaderIdSchema = z.object({
+  readerId: z.string().trim().min(1),
+});
+
 export const ClubMemberSchema = z.object({
   clubId: z.string().trim().min(1),
   userId: z.string().trim().min(1),

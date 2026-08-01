@@ -9,6 +9,7 @@ import {
   type LucideIcon,
   Search,
   Swords,
+  UserRound,
   Users,
 } from "lucide-react";
 
@@ -17,7 +18,13 @@ import { cn } from "@/lib/utils";
 
 type NavItem = {
   href: string;
-  labelKey: "overview" | "myBooks" | "findBooks" | "clubs" | "duels";
+  labelKey:
+    | "overview"
+    | "myBooks"
+    | "findBooks"
+    | "clubs"
+    | "readers"
+    | "duels";
   icon: LucideIcon;
 };
 
@@ -26,6 +33,7 @@ export const NAV: NavItem[] = [
   { href: "/books", labelKey: "myBooks", icon: Library },
   { href: "/books/search", labelKey: "findBooks", icon: Search },
   { href: "/clubs", labelKey: "clubs", icon: Users },
+  { href: "/readers", labelKey: "readers", icon: UserRound },
   { href: "/duels", labelKey: "duels", icon: Swords },
 ];
 

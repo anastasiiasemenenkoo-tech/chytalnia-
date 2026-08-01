@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { ReadingProgressBar } from "@/components/books/reading-progress-bar";
 import { InviteLinkDialog } from "@/components/clubs/invite-link-dialog";
 import { RemoveMemberButton } from "@/components/clubs/remove-member-button";
@@ -65,9 +67,14 @@ export async function ClubMembers({
                       </AvatarFallback>
                     </Avatar>
                     <div className="min-w-0">
-                      <p className="truncate text-sm">
+                      {/* The way you find someone to follow: no people search
+                          anywhere, only the readers already in front of you. */}
+                      <Link
+                        href={`/readers/${m.user.id}`}
+                        className="truncate text-sm hover:underline"
+                      >
                         {m.user.name ?? dict.common.unnamedReader}
-                      </p>
+                      </Link>
                       {m.user.email && (
                         <p className="text-muted-foreground truncate text-xs">
                           {m.user.email}

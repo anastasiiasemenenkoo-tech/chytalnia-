@@ -1,6 +1,12 @@
 import type { NextAuthConfig } from "next-auth";
 
-const PROTECTED_PREFIXES = ["/dashboard", "/books", "/clubs", "/duels"];
+const PROTECTED_PREFIXES = [
+  "/dashboard",
+  "/books",
+  "/clubs",
+  "/duels",
+  "/readers",
+];
 const AUTH_PAGES = ["/login", "/signup", "/forgot-password", "/reset-password"];
 
 export const authConfig = {
