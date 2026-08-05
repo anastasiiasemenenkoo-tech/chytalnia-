@@ -141,6 +141,10 @@ export const UpdateProfileSchema = z.object({
   email: z.email("invalidEmail").trim().toLowerCase(),
 });
 
+export const ConfirmEmailChangeSchema = z.object({
+  token: z.string().trim().min(1),
+});
+
 /**
  * Deleting an account asks for the address back rather than a checkbox: it
  * is the one string only the person at the keyboard is looking at, and it

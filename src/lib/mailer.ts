@@ -15,5 +15,16 @@ export async function sendEmail(args: {
     );
   }
   const resend = new Resend(apiKey);
-  await resend.emails.send({ from: FROM, to: args.to, subject: args.subject, html: args.html });
+  const { error } = await resend.emails.send({
+    from: FROM,
+    to: args.to,
+    subject: args.subject,
+    html: args.html,
+  });
+  // The SDK reports API failures in the payload instead of throwing — a
+  // rejected recipient or an unverified sender would otherwise look like a
+  // delivered letter to every caller.
+  if (error) {
+    throw new Error(`Resend refused the message: ${error.name} — ${error.message}`);
+  }
 }

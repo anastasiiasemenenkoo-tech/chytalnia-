@@ -41,6 +41,7 @@ model User {
   ownedClubs   BookClub[]       @relation("ClubOwner")
   clubComments ClubComment[]
   resetTokens  PasswordResetToken[]
+  emailChanges EmailChangeToken[]
 
   duelsChallenged ReadingDuel[] @relation("DuelChallenger")
   duelsReceived   ReadingDuel[] @relation("DuelOpponent")
@@ -69,6 +70,23 @@ model Follow {
 model PasswordResetToken {
   id        String    @id @default(cuid())
   userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+/// A pending email change. The new address is parked here — never on `User` —
+/// until someone proves they can read mail sent to it, so a typo costs one
+/// undelivered letter instead of the account.
+model EmailChangeToken {
+  id        String    @id @default(cuid())
+  userId    String
+  newEmail  String
   tokenHash String    @unique
   expiresAt DateTime
   usedAt    DateTime?

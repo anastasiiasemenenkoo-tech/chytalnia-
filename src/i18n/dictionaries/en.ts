@@ -43,11 +43,37 @@ export const en: Dictionary = {
     nameLabel: "Name",
     emailLabel: "Email",
     emailHint:
-      "This is also how you sign in: change it and the old address stops working. We don't send a confirmation letter yet, so check it twice.",
+      "This is also how you sign in. A letter with a link goes to the new address — until you open it, the old one still gets you in.",
     saving: "Saving…",
     saved: "Saved.",
     saveFailed: "Couldn't save that. Try again.",
     emailTaken: "Another reader already uses that address.",
+    emailSendFailed:
+      "That letter didn't get through. Check the address and try again.",
+    emailPendingNote: "Waiting on confirmation: {email}",
+    emailPendingHint:
+      "We sent a link there — it's good for an hour. Until you open it, you still sign in with the old address.",
+    emailPendingCancel: "Cancel the change",
+    emailPendingCancelled: "Cancelled. Sticking with the old address.",
+    emailPendingToast: "A confirmation letter is on its way to {email}.",
+    changeEmailSubject: "Confirm your new address — Chytal'nia",
+    changeEmailHeading:
+      "Someone — hopefully you — wants this address to be their way into Chytal'nia.",
+    changeEmailCta: "Confirm this address",
+    changeEmailIgnore:
+      "If this wasn't you, just ignore this letter — nothing will change.",
+    changeEmailNoticeSubject: "Your account address is being changed — Chytal'nia",
+    changeEmailNoticeBody:
+      "Someone asked to move this Chytal'nia account to {email}. Until that address is confirmed by the link we sent it, you still sign in here. If this wasn't you, change your password.",
+    confirmTitle: "Your new address",
+    confirmSubtitle:
+      "One click and Chytal'nia will know you by this address. It becomes your sign-in too.",
+    confirmSubmit: "Confirm",
+    confirmSubmitting: "Confirming…",
+    confirmInvalid:
+      "This link no longer works — it's either been used or it's expired. Try changing the address again in settings.",
+    confirmDone: "Done. Your address is {email} from now on.",
+    confirmDoneHome: "To the reading room",
     dangerTitle: "Delete account",
     dangerSubtitle: "There is no way back from this one.",
     deleteAction: "Delete account",

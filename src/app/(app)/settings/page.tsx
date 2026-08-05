@@ -24,6 +24,12 @@ export default async function SettingsPage() {
     where: { ownerId: user.id },
   });
 
+  const pendingChange = await prisma.emailChangeToken.findFirst({
+    where: { userId: user.id, usedAt: null, expiresAt: { gt: new Date() } },
+    orderBy: { createdAt: "desc" },
+    select: { newEmail: true },
+  });
+
   return (
     <div className="mx-auto max-w-2xl space-y-8">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -52,7 +58,11 @@ export default async function SettingsPage() {
           <CardDescription>{dict.account.basicsSubtitle}</CardDescription>
         </CardHeader>
         <CardContent>
-          <ProfileForm name={user.name} email={user.email} />
+          <ProfileForm
+            name={user.name}
+            email={user.email}
+            pendingEmail={pendingChange?.newEmail ?? null}
+          />
         </CardContent>
       </Card>
 

@@ -1,6 +1,5 @@
 "use server";
 
-import { createHash, randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { AuthError } from "next-auth";
@@ -11,6 +10,7 @@ import { getDictionary } from "@/i18n";
 import { sendEmail } from "@/lib/mailer";
 import { prisma } from "@/lib/db";
 import { requireCurrentUser } from "@/lib/session";
+import { createToken, hashToken, TOKEN_TTL_MS } from "@/lib/tokens";
 import {
   LoginSchema,
   RequestPasswordResetSchema,
@@ -19,8 +19,6 @@ import {
   YearlyGoalSchema,
 } from "@/lib/validators";
 import type { ActionResult } from "@/actions/books";
-
-const RESET_TOKEN_TTL_MS = 60 * 60 * 1000; // 1 hour
 
 export type AuthFormState =
   | {
@@ -182,19 +180,18 @@ export async function requestPasswordResetAction(
   // Only actually create a token / send an email if the account exists, but
   // always report success below — never reveal whether an email is registered.
   if (user) {
-    const rawToken = randomBytes(32).toString("hex");
-    const tokenHash = createHash("sha256").update(rawToken).digest("hex");
+    const token = createToken();
 
     await prisma.passwordResetToken.create({
       data: {
         userId: user.id,
-        tokenHash,
-        expiresAt: new Date(Date.now() + RESET_TOKEN_TTL_MS),
+        tokenHash: token.hash,
+        expiresAt: new Date(Date.now() + TOKEN_TTL_MS),
       },
     });
 
     const baseUrl = process.env.APP_URL ?? "http://localhost:3000";
-    const resetUrl = `${baseUrl}/reset-password?token=${rawToken}`;
+    const resetUrl = `${baseUrl}/reset-password?token=${token.raw}`;
 
     try {
       await sendEmail({
@@ -242,12 +239,8 @@ export async function resetPasswordAction(
   }
 
   const dict = await getDictionary();
-  const tokenHash = createHash("sha256")
-    .update(parsed.data.token)
-    .digest("hex");
-
   const resetToken = await prisma.passwordResetToken.findUnique({
-    where: { tokenHash },
+    where: { tokenHash: hashToken(parsed.data.token) },
   });
 
   if (!resetToken || resetToken.usedAt || resetToken.expiresAt < new Date()) {
